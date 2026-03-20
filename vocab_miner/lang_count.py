@@ -8,11 +8,11 @@ print('Welcome to the Vocab Miner!')
 
 while True:
     choice = input("""
-
 What would you like to do?
                    
 > Mine = Isolate study worthy vocab from a text file
 > Add  = Add words to your Known Words List(s)
+> Stop = Add words to your Stop Words List(s)
 > Exit = Close the program
 
 >> """).lower().strip()
@@ -117,25 +117,25 @@ What would you like to do?
             continue
 
     # process the text to isolate words, count them, and print a filtered list of words with their counts
-
         words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
         counts = Counter(words)
-        print('\nVocabulary list (filtered):\n')
+        n = 0
+        print('\nVocabulary list (filtered):\n---------------------------')
         for word, count in counts.most_common():
             if word not in stop_words and word not in known_words:
-                print(f'{word}: {count}')
+                n += 1
+                print(f'{n}: {word} - {count}')
+        print(f'-----------------------------\nYou found {n} words to study!')
 
 # allow for adding of words to a known words list, including input standardization and option to quit to main menu
-
     elif choice == 'add':
-        language_full = input(
-            '\nWhich Known Words list would you like to add to?\n>> ').lower().strip()
-        if len(language_full) < 3:
-            print('\nPlease provide the first 3 letters of the language or more.')
-            continue
+        while True:
+            language_full = input('\nWhich Known Words list would you like to add to?\n>> ').lower().strip()
+            if len(language_full) < 3:
+                print('\nPlease provide the first 3 letters of the language or more.')
+                continue
 
     # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
-
         lang = language_full[0:3]
         try:
             with open(f'stop_words/known_words_{lang}.txt', 'r', encoding='utf-8') as f:
@@ -145,9 +145,8 @@ What would you like to do?
             known_words = []
 
     # prompt user for words to add to the Known Words list, standardize input, and write the updated list to file
-
         add_words_str = input(
-            '\nWhat words would you like to add to the list? Separate the words only with spaces.\n>>').lower().strip()
+            '\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
         add_words = [add_words_str.split()]
         for word in add_words:
             if word in known_words:
@@ -156,7 +155,6 @@ What would you like to do?
             known_words.sort()
 
     # try to copy the existing Known Words list to a backup file, if it fails, print a message that the Known Words list is being created, then write the updated Known Words list to file
-
         try:
             shutil.copy(f'stop_words/known_words_{lang}.txt',
                         f'stop_words/backups/known_words_{lang}_backup.txt')
@@ -166,12 +164,48 @@ What would you like to do?
         with open(f'stop_words/known_words_{lang}.txt', 'w', encoding='utf-8') as f:
             for word in known_words:
                 f.write(f'{word}\n')
-        print(known_words)
-        print(f'{add_words_str} {'has' if len(add_words) == 1 else 'have'} successfully been added to known_words_{lang}.txt')
+        print(f'"{add_words_str}" {'has' if len(add_words) == 1 else 'have'} successfully been added to known_words_{lang}.txt')
         print(f'The list is now {len(known_words)} words long.')
 
-# allow for exiting the program
+# all for adding words to stop words list from within the program
+    elif choice == 'stop':
+        while True:
+            language_full = input("""
+What stop words list would you like to add to?
+Please enter the full language name or "done" to return to the menu.
+>> """).lower().strip()
+            if len(language_full) < 3:
+                print('\nPlease provide the first 3 letters of the language or more.')
+                continue
+            break
+    # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
+        lang = language_full[0:3]
+        try:
+            with open(f'stop_words/stop_words_{lang}.txt', 'r', encoding='utf-8') as f:
+                stop_words = [line.strip().lower() for line in f if line.strip()]
+        except:
+            known_words = []
+    # prompt user for words to add to the Stop Words list, standardize input, and write the updated list to file
+        add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+        add_words = [add_words_str.split()]
+        for word in add_words:
+            if word in stop_words:
+                continue
+            stop_words.extend(word)
+            stop_words.sort()
+    # try to copy the existing Stop Words list to a backup file, if it fails, print a message that the Stop Words list is being created, then write the updated Stop Words list to file
+        try:
+            shutil.copy(f'stop_words/stop_words_{lang}.txt',
+                        f'stop_words/backups/stop_words_{lang}_backup.txt')
+            print(f'\nCreating backup of stop_words_{lang}.txt')
+        except:
+            print(f'Creating stop_words_{lang}.txt')
+        with open(f'stop_words/stop_words_{lang}.txt', 'w', encoding='utf-8') as f:
+            for word in stop_words:
+                f.write(f'{word}\n')
+        print(f'"{add_words_str}" {'has' if len(add_words) == 1 else 'have'} successfully been added to stop_words_{lang}.txt')
 
+# allow for exiting the program
     elif choice == 'exit':
         exit()
 
