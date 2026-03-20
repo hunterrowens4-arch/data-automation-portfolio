@@ -2,6 +2,7 @@ a
 ah
 al
 algo
+antonio
 anuel
 ao
 aquí
@@ -10,6 +11,7 @@ authentic
 ay
 baby
 balvin
+barcelona
 bebecita
 becky
 bentley
@@ -18,6 +20,7 @@ brasil
 break
 brr
 carolina
+cheese
 chris
 clap
 close
@@ -53,9 +56,11 @@ friendly
 fuck
 fuckin
 g
+gabriela
 go
 google
 gps
+gravy
 ha
 haze
 he
@@ -72,6 +77,7 @@ la
 lao
 las
 le
+les
 less
 let
 lo
@@ -95,6 +101,7 @@ muy
 na
 nada
 ni
+nicole
 no
 nos
 nosotra
@@ -103,6 +110,7 @@ nosotros
 o
 oh
 on
+oye
 ozuna
 p'atrá
 pa
@@ -110,16 +118,24 @@ papi
 para
 paris
 party
+patricia
 pending
 pero
 por
+pr
 prrr
 ra
+san
+say
 se
 selena
+selfie
 ser
 si
 sí
+sofía
+son
+sorry
 su
 sus
 que
@@ -129,8 +145,12 @@ talk
 tan
 tanning
 te
+thalía
 them
 ti
+to
+toa
+toas
 to's
 training
 tu
@@ -141,6 +161,9 @@ uh
 un
 una
 uoh
+vamo
+vip
+vo'a
 waiting
 wifey
 woh
