@@ -1,6 +1,40 @@
 import re
 import shutil
 from collections import Counter
+import random
+
+
+transcripts = {
+    'spa': [
+        'anuelaa_amanece.txt',
+        'badbunny_titimepregunto.txt',
+        'chrisjeday_ahoradice.txt',
+        'karolg_provenza.txt',
+        'lunay_aventura.txt',
+        'rauwalejandro_babyhello.txt',
+        'tainy_adicto.txt',
+        'youngmiko_algocasual.txt',
+    ],
+    'rus': [
+        'miaboyka_lyrics.txt',
+        'miaboyka_lyrics2.txt',
+    ],
+}
+
+
+def get_lang_choice():
+    while True:
+        language_full = input(
+            '\nWhat language is the file in?\n>> ').strip().lower()
+        if len(language_full) < 3:
+            print('\nPlease provide the first 3 letters of the language or more.')
+            continue
+        lang = language_full[0:3]
+        return lang
+
+
+skip_choice = None
+
 
 print('Welcome to the Vocab Miner!')
 
@@ -25,9 +59,13 @@ What would you like to do?
 
         while True:
             filename = input(
-                '\nEnter the filename, or "quit" to return to menu:\n>> ').lower().strip()
+                '\nEnter the filename. You can also enter "random" for a random transcript or "quit" to return to menu:\n>> ').lower().strip()
             if filename == 'quit':
                 break
+            elif filename == 'random':
+                skip_choice = True
+                lang = get_lang_choice()
+                filename = random.choice(transcripts[lang])
 
         # try/except tree to allow for multiple file locations, including a direct path to the file, adding convenience
 
@@ -61,17 +99,13 @@ What would you like to do?
         while True:
             continue_choice = -1
             stop_words = []
-            language_full = input(
-                '\nWhat language is the file in?\n>> ').strip().lower()
-            if len(language_full) < 3:
-                print('\nPlease provide the first 3 letters of the language or more.')
-                continue
-            lang = language_full[0:3]
+            if not skip_choice:
+                lang = get_lang_choice()
 
         # try to open the stop words list for the language choice, if it fails, prompt user to continue or return to main menu
 
             try:
-                with open(f'stop_words/stop_words_{lang}.txt', 'r', encoding='utf-8') as f:
+                with open(f'filters/stop_words/stop_words_{lang}.txt', 'r', encoding='utf-8') as f:
                     stop_words = [line.strip().lower()
                                   for line in f if line.strip()]
                 break
@@ -97,7 +131,7 @@ What would you like to do?
                 # try to open the Known Words list for the language choice, if it fails, prompt user to continue without a Known Words list, try again, or return to main menu
 
                 try:
-                    with open(f'stop_words/known_words_{lang}.txt', 'r', encoding='utf-8') as f:
+                    with open(f'filters/known_words/known_words_{lang}.txt', 'r', encoding='utf-8') as f:
                         known_words = [line.strip().lower()
                                        for line in f if line.strip()]
                         break
@@ -134,19 +168,19 @@ What would you like to do?
             if len(language_full) < 3:
                 print('\nPlease provide the first 3 letters of the language or more.')
                 continue
+            break
 
     # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
         lang = language_full[0:3]
         try:
-            with open(f'stop_words/known_words_{lang}.txt', 'r', encoding='utf-8') as f:
+            with open(f'filters/known_words/known_words_{lang}.txt', 'r', encoding='utf-8') as f:
                 known_words = [line.strip().lower()
                                for line in f if line.strip()]
         except:
             known_words = []
 
     # prompt user for words to add to the Known Words list, standardize input, and write the updated list to file
-        add_words_str = input(
-            '\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+        add_words_str = input('What words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
         add_words = [add_words_str.split()]
         for word in add_words:
             if word in known_words:
@@ -156,12 +190,12 @@ What would you like to do?
 
     # try to copy the existing Known Words list to a backup file, if it fails, print a message that the Known Words list is being created, then write the updated Known Words list to file
         try:
-            shutil.copy(f'stop_words/known_words_{lang}.txt',
-                        f'stop_words/backups/known_words_{lang}_backup.txt')
+            shutil.copy(f'filters/known_words/known_words_{lang}.txt',
+                        f'filters/known_words/backups/known_words_{lang}_backup.txt')
             print(f'\nCreating backup of known_words_{lang}.txt')
         except:
             print(f'Creating known_words_{lang}.txt')
-        with open(f'stop_words/known_words_{lang}.txt', 'w', encoding='utf-8') as f:
+        with open(f'filters/known_words/known_words_{lang}.txt', 'w', encoding='utf-8') as f:
             for word in known_words:
                 f.write(f'{word}\n')
         print(f'"{add_words_str}" {'has' if len(add_words) == 1 else 'have'} successfully been added to known_words_{lang}.txt')
@@ -181,7 +215,7 @@ Please enter the full language name or "done" to return to the menu.
     # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
         lang = language_full[0:3]
         try:
-            with open(f'stop_words/stop_words_{lang}.txt', 'r', encoding='utf-8') as f:
+            with open(f'filters/stop_words/stop_words_{lang}.txt', 'r', encoding='utf-8') as f:
                 stop_words = [line.strip().lower() for line in f if line.strip()]
         except:
             known_words = []
@@ -195,12 +229,12 @@ Please enter the full language name or "done" to return to the menu.
             stop_words.sort()
     # try to copy the existing Stop Words list to a backup file, if it fails, print a message that the Stop Words list is being created, then write the updated Stop Words list to file
         try:
-            shutil.copy(f'stop_words/stop_words_{lang}.txt',
-                        f'stop_words/backups/stop_words_{lang}_backup.txt')
+            shutil.copy(f'filters/stop_words/stop_words_{lang}.txt',
+                        f'filters/stop_words/backups/stop_words_{lang}_backup.txt')
             print(f'\nCreating backup of stop_words_{lang}.txt')
         except:
             print(f'Creating stop_words_{lang}.txt')
-        with open(f'stop_words/stop_words_{lang}.txt', 'w', encoding='utf-8') as f:
+        with open(f'filters/stop_words/stop_words_{lang}.txt', 'w', encoding='utf-8') as f:
             for word in stop_words:
                 f.write(f'{word}\n')
         print(f'"{add_words_str}" {'has' if len(add_words) == 1 else 'have'} successfully been added to stop_words_{lang}.txt')
