@@ -65,7 +65,10 @@ What would you like to do?
             elif filename == 'random':
                 skip_choice = True
                 lang = get_lang_choice()
-                filename = random.choice(transcripts[lang])
+                try:
+                    filename = random.choice(transcripts[lang])
+                except:
+                    print('\nNo transcripts found in that language.')
 
         # try/except tree to allow for multiple file locations, including a direct path to the file, adding convenience
 
@@ -152,13 +155,17 @@ What would you like to do?
 
     # process the text to isolate words, count them, and print a filtered list of words with their counts
         words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
+        lines = text.split('\n')
         counts = Counter(words)
         n = 0
         print('\nVocabulary list (filtered):\n---------------------------')
         for word, count in counts.most_common():
             if word not in stop_words and word not in known_words:
+                for line in lines:
+                    if word in line:
+                        word_line = line
                 n += 1
-                print(f'{n}: {word} - {count}')
+                print(f'{n}: {word} - {count} | {word_line}')
         print(f'-----------------------------\nYou found {n} words to study!')
 
 # allow for adding of words to a known words list, including input standardization and option to quit to main menu
@@ -247,6 +254,3 @@ Please enter the full language name or "done" to return to the menu.
 
     else:
         print('Invalid input.')
-
-# add an option to provide a list of available transcripts and stop words lists
-# add an option to add new transcripts directly to the transcripts folder
