@@ -166,7 +166,7 @@ What would you like to do?
                         word_line = line
                 n += 1
                 print(f'{n}: {word} - {count} | {word_line}')
-        print(f'-----------------------------\nYou found {n} words to study!')
+        print(f'-----------------------------\nYou found {n} words to study out of {len(counts)} total words!')
 
 # allow for adding of words to a known words list, including input standardization and option to quit to main menu
     elif choice == 'add':
@@ -227,7 +227,7 @@ Please enter the full language name or "done" to return to the menu.
         except:
             known_words = []
     # prompt user for words to add to the Stop Words list, standardize input, and write the updated list to file
-        add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+        add_words_str = input('\n\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
         add_words = [add_words_str.split()]
         for word in add_words:
             if word in stop_words:
