@@ -187,7 +187,7 @@ What would you like to do?
             known_words = []
 
     # prompt user for words to add to the Known Words list, standardize input, and write the updated list to file
-        add_words_str = input('What words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+        add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
         add_words = [add_words_str.split()]
         for word in add_words:
             if word in known_words:
@@ -227,7 +227,7 @@ Please enter the full language name or "done" to return to the menu.
         except:
             known_words = []
     # prompt user for words to add to the Stop Words list, standardize input, and write the updated list to file
-        add_words_str = input('\n\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+        add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
         add_words = [add_words_str.split()]
         for word in add_words:
             if word in stop_words:
