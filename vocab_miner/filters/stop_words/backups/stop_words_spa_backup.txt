@@ -1,5 +1,6 @@
 a
 ah
+ajá
 al
 algo
 antonio
@@ -28,17 +29,21 @@ como
 con
 contao
 cosas
+crush
 cuando
 cómo
 de
 del
+delicious
 dna
 donde
 dónde
 e
+eah
 eh
 el
 ella
+en
 en
 es
 esa
@@ -52,6 +57,8 @@ estoy
 está
 ey
 fake
+freak
+freaky
 friendly
 fuck
 fuckin
@@ -61,6 +68,7 @@ go
 google
 gps
 gravy
+gym
 ha
 haze
 he
@@ -68,6 +76,7 @@ hello
 hey
 huh
 hydro
+i'm
 it's
 j
 jeday
@@ -97,8 +106,11 @@ man
 maps
 mas
 me
+mhm
 mi
+mirror
 mis
+mmm
 more
 muy
 más
@@ -106,6 +118,7 @@ mí
 na
 nada
 nah
+nasty
 ni
 nicole
 no
@@ -120,6 +133,7 @@ oye
 ozuna
 p'atrá
 pa
+panty
 papi
 para
 paris
@@ -129,16 +143,19 @@ pending
 pero
 por
 pr
+pre
 prrr
 que
 qué
 ra
+romantic
 san
 say
 se
 selena
 selfie
 ser
+sexy
 si
 sofía
 son
@@ -152,6 +169,7 @@ tan
 tanning
 te
 thalía
+the
 them
 ti
 to
@@ -159,6 +177,7 @@ to's
 toa
 toas
 training
+tre
 tu
 tus
 tú
@@ -171,6 +190,8 @@ vamo
 vip
 vo'a
 waiting
+wall
+weekend
 wifey
 woh
 wrap
