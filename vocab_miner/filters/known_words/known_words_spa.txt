@@ -77,6 +77,8 @@ dialogando
 dice
 dicen
 diciendo
+diga
+digas
 dijo
 dime
 dinero
@@ -98,8 +100,10 @@ encontramo
 encontramos
 enredé
 enseño
+enséñame
 entiendo
 enviarte
+envíame
 era
 eres
 escribe
@@ -124,6 +128,7 @@ fuma
 fácil
 ganas
 gente
+grita
 gusta
 gustamos
 gustan
@@ -164,6 +169,7 @@ llamaba
 llamar
 llamo
 llamó
+llego
 llorar
 luz
 mandar
@@ -294,6 +300,7 @@ sientes
 significa
 sin
 sola
+solita
 solo
 sombra
 soy
@@ -329,6 +336,7 @@ veces
 ven
 vengas
 ver
+verdad
 verso
 ves
 vez

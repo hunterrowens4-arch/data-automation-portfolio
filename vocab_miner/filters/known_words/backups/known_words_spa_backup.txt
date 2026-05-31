@@ -42,6 +42,7 @@ casa
 casi
 casual
 cel
+chingar
 colombiana
 come
 comerte
@@ -63,11 +64,13 @@ cuerpo
 culpa
 darle
 darte
+decir
 decirte
 decía
 dejando
 demasiado
 desde
+después
 diabla
 diablo
 dialogando
@@ -94,6 +97,7 @@ encima
 encontramo
 encontramos
 enredé
+enseño
 entiendo
 enviarte
 era
@@ -111,6 +115,7 @@ extraña
 famosa
 feliz
 fiesta
+foto
 fotos
 frío
 fue
@@ -125,6 +130,7 @@ gustan
 gustas
 habla
 hablando
+hablar
 hablaron
 hace
 hacer
@@ -204,6 +210,7 @@ olvidar
 olvidaron
 olvide
 otra
+otros
 oíste
 par
 pare
@@ -211,6 +218,7 @@ partes
 pasado
 pasao
 pensando
+pensar
 perder
 perfecta
 periódico
@@ -237,6 +245,7 @@ primero
 prioridad
 probarte
 provoca
+pueden
 puedes
 puedo
 punto
@@ -245,6 +254,7 @@ quedarme
 quedarte
 querer
 quería
+quien
 quiere
 quieren
 quieres
@@ -254,6 +264,7 @@ quítate
 razón
 real
 recuerdo
+reina
 relación
 repetirlo
 rico
@@ -270,6 +281,8 @@ sale
 sales
 salga
 seguramente
+seguro
+semana
 sentido
 sentir
 sentirte
@@ -278,12 +291,14 @@ seria
 siempre
 siente
 sientes
+significa
 sin
 sola
 solo
 sombra
 soy
 subir
+sucia
 sufrir
 sé
 también
@@ -304,14 +319,17 @@ toda
 todas
 todo
 todos
+tómame
 uno
 va
+van
 vas
 ve
 veces
 ven
 vengas
 ver
+verso
 ves
 vez
 viajar
