@@ -36,11 +36,11 @@ def get_transcript_request():
 
 def load_transcript(filename, language):
     try:
-        with open(f'transcripts/{language}/{filename}', 'r', encoding='utf=8') as file:
+        with open(f'transcripts/{language}/{filename}', 'r', encoding='utf-8') as file:
             text = file.read().lower()
         return text
-    except:
-        raise FileNotFoundError
+    except FileNotFoundError:
+        raise
 
 def mine_transcript():
     while True:
@@ -50,7 +50,6 @@ def mine_transcript():
             break
         except FileNotFoundError:
             print('\nError, file not found, try again.')
-
 
         # loop to get a valid language choice from the user, including standardization of inputs, and option to quit to main menu
 
