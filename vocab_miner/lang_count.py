@@ -21,6 +21,28 @@ transcripts = {
     ],
 }
 
+def analyze_transcript(text, stop_words, known_words):
+    words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
+    lines = text.split("\n")
+    counts = Counter(words)
+
+    n = 0
+    results = []
+
+    for word, count in counts.most_common():
+        if word not in stop_words and word not in known_words:
+
+            example_line = ""
+            for line in lines:
+                if word in line:
+                    example_line = line
+                    break  # optional improvement
+
+            n += 1
+            results.append((n, word, count, example_line))
+
+    return results, counts
+
 def get_transcript_request():
     # RANDOM FUNCTION DISABLED FOR REFRACTORING
     # QUIT FUNCTION DISABLED FOR REFRACTORING
@@ -106,19 +128,14 @@ def mine_transcript():
             continue
 
     # process the text to isolate words, count them, and print a filtered list of words with their counts
-    words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
-    lines = text.split('\n')
-    counts = Counter(words)
-    n = 0
-    print('\nVocabulary list (filtered):\n---------------------------')
-    for word, count in counts.most_common():
-        if word not in stop_words and word not in known_words:
-            for line in lines:
-                if word in line:
-                    word_line = line
-            n += 1
-            print(f'{n}: {word} - {count} | {word_line}')
-    print(f'-----------------------------\nYou found {n} words to study out of {len(counts)} total words!')
+    results, counts = analyze_transcript(text, stop_words, known_words)
+
+    print('\nVocabulary list (filtered):\n')
+
+    for n, word, count, example_line in results:
+        print(f'{n}: {word} - {count} | {example_line}')
+
+    print(f'\nYou have identified {len(results)} study words out of {len(counts)} total words! ({len(results) / len(counts):.1%})')
 
 skip_choice = None
 
