@@ -145,15 +145,9 @@ What would you like to do?
        
 # allow for adding of words to a known words list, including input standardization and option to quit to main menu
     elif choice == 'add':
-        while True:
-            language_full = input('\nWhich Known Words list would you like to add to?\n>> ').lower().strip()
-            if len(language_full) < 3:
-                print('\nPlease provide the first 3 letters of the language or more.')
-                continue
-            break
+        language = input('\nWhich Known Words list would you like to add to?\n>> ').lower().strip()
 
     # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
-        language = language_full[0:3]
         try:
             with open(f'filters/known_words/known_words_{language}.txt', 'r', encoding='utf-8') as f:
                 known_words = [line.strip().lower()
@@ -185,17 +179,11 @@ What would you like to do?
 
 # all for adding words to stop words list from within the program
     elif choice == 'stop':
-        while True:
-            language_full = input("""
+        language = input("""
 What stop words list would you like to add to?
 Please enter the full language name or "done" to return to the menu.
 >> """).lower().strip()
-            if len(language_full) < 3:
-                print('\nPlease provide the first 3 letters of the language or more.')
-                continue
-            break
     # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
-        language = language_full[0:3]
         try:
             with open(f'filters/stop_words/stop_words_{language}.txt', 'r', encoding='utf-8') as f:
                 stop_words = [line.strip().lower() for line in f if line.strip()]
