@@ -3,7 +3,6 @@ import shutil
 from collections import Counter
 import random
 
-
 transcripts = {
     'spa': [
         'anuelaa_amanece.txt',
