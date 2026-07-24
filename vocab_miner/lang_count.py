@@ -1,7 +1,8 @@
+from collections import Counter
+from pathlib import Path
+import random
 import re
 import shutil
-from collections import Counter
-import random
 
 transcripts = {
     'spa': [
@@ -106,6 +107,12 @@ def get_transcript_request():
     ).lower().strip()
 
     return filename, language
+
+def list_transcripts(language):
+    folder = Path("transcripts") / language
+    transcripts = list(folder.glob("*.txt"))
+    transcripts.sort(key=lambda path: path.name)
+    return transcripts
 
 def load_known_words(language):
     try:
@@ -233,6 +240,12 @@ What would you like to do?
 # allow for exiting the program
     elif choice == 'exit':
         exit()
+
+# for testing / debugging
+# comment out when not in use
+    elif choice == 'test':
+        language = input(f'\nWhat language would you like to display?\n>> ').lower().strip()
+        print(list_transcripts(language))
 
 # handle invalid user input
     else:
