@@ -367,6 +367,7 @@ solita
 solo
 sombra
 soy
+story
 subir
 subiste
 sucia

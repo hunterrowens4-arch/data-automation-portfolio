@@ -4,23 +4,6 @@ import random
 import re
 import shutil
 
-transcripts = {
-    'spa': [
-        'anuelaa_amanece.txt',
-        'badbunny_titimepregunto.txt',
-        'chrisjeday_ahoradice.txt',
-        'karolg_provenza.txt',
-        'lunay_aventura.txt',
-        'rauwalejandro_babyhello.txt',
-        'tainy_adicto.txt',
-        'youngmiko_algocasual.txt',
-    ],
-    'rus': [
-        'miaboyka_lyrics.txt',
-        'miaboyka_lyrics2.txt',
-    ],
-}
-
 def add_known_words():
     language = input('\nWhich Known Words list would you like to add to?\n>> ').lower().strip()
 
@@ -39,25 +22,25 @@ def add_known_words():
     copy_words_list("known_words", language)
     save_words_list("known_words", known_words, language)
 
-def add_stop_words():
-    language = input('\nWhich Stop Words list would you like to add to?\n>> ').lower().strip()
-
-    # try to open the Stop Words list for the language choice, if it fails, create a new Stop Words list for that language
-    try:
-        stop_words = load_stop_words(language)
-    except FileNotFoundError:
-        stop_words = []
+#def add_stop_words():
+#    language = input('\nWhich Stop Words list would you like to add to?\n>> ').lower().strip()
+#
+#    # try to open the Stop Words list for the language choice, if it fails, create a new Stop Words list for that language
+#    try:
+#        stop_words = load_stop_words(language)
+#    except FileNotFoundError:
+#        stop_words = []
 
     # prompt user for words to add to the Stop Words list, standardize input, and write the updated list to file
-    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
-    add_words = [add_words_str.split()]
-    stop_words = extend_list(stop_words, add_words)
+#    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+#    add_words = [add_words_str.split()]
+#    stop_words = extend_list(stop_words, add_words)
 
     # try to copy the existing Stop Words list to a backup file, if it fails, print a message that the Stop Words list is being created, then write the updated Stop Words list to file
-    copy_words_list("stop_words", language)
-    save_words_list("stop_words", language)
+#    copy_words_list("stop_words", language)
+#    save_words_list("stop_words", language)
 
-def analyze_transcript(text, stop_words, known_words):
+def analyze_transcript(text, stop_words, known_words, ignore_words):
     words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
     lines = text.split("\n")
     counts = Counter(words)
@@ -66,7 +49,9 @@ def analyze_transcript(text, stop_words, known_words):
     results = []
 
     for word, count in counts.most_common():
-        if word not in stop_words and word not in known_words:
+        if word.isdigit():
+            continue
+        elif word not in stop_words and word not in known_words and word not in ignore_words:
 
             example_line = ""
             for line in lines:
@@ -78,6 +63,35 @@ def analyze_transcript(text, stop_words, known_words):
             results.append((n, word, count, example_line))
 
     return results, counts
+
+def choose_transcript(transcript_paths):
+    for number, file in enumerate(transcript_paths, start=1):
+        print(f'{number}, {file.name}')
+    while True:
+        user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select, or enter "R" for a random transcript.\n>> ').lower().strip()
+        if user_transcript_choice == 'r':
+            while True:
+                chosen_transcript = random.choice(transcript_paths)
+                confirm_transcript = input(f'\nStudying {chosen_transcript.name}.\nContinue? (Y/N)\n\n>> ').lower().strip()
+                if confirm_transcript == 'y':
+                    return chosen_transcript
+                else:
+                    continue
+        else:
+            try:
+                choice = int(user_transcript_choice)
+                if not 1<= choice <= len(transcript_paths):
+                    print(f'\nPlease select a listed transcript.')
+                    continue
+            except ValueError:
+                print(f'\nPlease print a valid number.')
+                continue
+        chosen_transcript = transcript_paths[choice - 1]
+        confirm_transcript = input(f'\nStudying {chosen_transcript.name}.\nContinue? (Y/N)\n\n>> ').lower().strip()
+        if confirm_transcript == 'y':
+            return chosen_transcript
+        else:
+            continue
 
 def copy_words_list(words_list, language):
     try:
@@ -95,24 +109,34 @@ def extend_list(word_list, words):
     word_list.sort()
     return word_list
 
-def get_transcript_request():
-    # RANDOM FUNCTION DISABLED FOR REFRACTORING
-    # QUIT FUNCTION DISABLED FOR REFRACTORING
-    filename = input(
-        '\nEnter the filename\n>> '
-    ).lower().strip()
-    
-    language = input(
-        '\nWhat language is the transcript in? Please enter the full language (for example: "Spanish")\n>> '
-    ).lower().strip()
+def get_transcript_request():   
+    while True:
+        language = input(
+            '\nWhat language is the transcript in? Please enter the full language (for example: "Spanish")\n>> '
+        ).lower().strip()
 
-    return filename, language
+        transcript_paths = list_transcripts(language)
+        if len(transcript_paths) == 0:
+            print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
+            continue
+        else:
+            chosen_transcript = choose_transcript(transcript_paths)
+            return chosen_transcript, language
 
 def list_transcripts(language):
     folder = Path("transcripts") / language
-    transcripts = list(folder.glob("*.txt"))
-    transcripts.sort(key=lambda path: path.name)
-    return transcripts
+    transcript_paths = list(folder.glob("*.txt"))
+    transcript_paths.sort(key=lambda path: path.name)
+    return transcript_paths
+
+def load_ignore_words():
+    try:
+        with open(f'filters/ignore_words/ignore_words_global.txt', 'r', encoding='utf-8') as f:
+            ignore_words = [line.strip().lower()
+                            for line in f if line.strip()]
+        return ignore_words
+    except FileNotFoundError:
+        raise
 
 def load_known_words(language):
     try:
@@ -132,9 +156,9 @@ def load_stop_words(language):
     except FileNotFoundError:
         raise
 
-def load_transcript(filename, language):
+def load_transcript(filename):
     try:
-        with open(f'transcripts/{language}/{filename}', 'r', encoding='utf-8') as file:
+        with open(filename, 'r', encoding='utf-8') as file:
             text = file.read().lower()
         return text
     except FileNotFoundError:
@@ -142,9 +166,9 @@ def load_transcript(filename, language):
 
 def mine_transcript():
     while True:
-        filename, language = get_transcript_request()
+        chosen_transcript, language = get_transcript_request()
         try:
-            text = load_transcript(filename, language)
+            text = load_transcript(chosen_transcript)
             break
         except FileNotFoundError:
             print('\nError, file not found, try again.')
@@ -194,8 +218,10 @@ def mine_transcript():
         if filter_list == 'quit':
             continue
 
+    ignore_words = load_ignore_words()
+
     # process the text to isolate words, count them, and print a filtered list of words with their counts
-    results, counts = analyze_transcript(text, stop_words, known_words)
+    results, counts = analyze_transcript(text, stop_words, known_words, ignore_words)
 
     print('\nVocabulary list (filtered):\n')
 
@@ -220,7 +246,6 @@ What would you like to do?
                    
 > Mine = Isolate study worthy vocab from a text file
 > Add  = Add words to your Known Words List(s)
-> Stop = Add words to your Stop Words List(s)
 > Exit = Close the program
 
 >> """).lower().strip()
@@ -233,10 +258,6 @@ What would you like to do?
     elif choice == 'add':
         add_known_words()
 
-# all for adding words to stop words list from within the program
-    elif choice == 'stop':
-        add_stop_words()
-
 # allow for exiting the program
     elif choice == 'exit':
         exit()
@@ -245,7 +266,10 @@ What would you like to do?
 # comment out when not in use
     elif choice == 'test':
         language = input(f'\nWhat language would you like to display?\n>> ').lower().strip()
-        print(list_transcripts(language))
+        transcript_paths = list_transcripts(language)
+        chosen_transcript = choose_transcript(transcript_paths)
+        text = load_transcript(chosen_transcript)
+        print(text)
 
 # handle invalid user input
     else:

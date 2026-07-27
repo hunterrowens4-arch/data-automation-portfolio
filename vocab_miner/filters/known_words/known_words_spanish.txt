@@ -79,6 +79,8 @@ convierto
 copas
 corazón
 cosa
+cosa
+cosas
 cosas
 coño
 crédito
@@ -147,6 +149,7 @@ escuchar
 escuchas
 estaba
 estar
+estoy
 estudiao
 están
 estás
@@ -161,6 +164,7 @@ fotos
 frenchie
 frío
 fue
+fuimo
 fuiste
 fuma
 fácil
@@ -220,11 +224,16 @@ llorar
 loco
 luz
 mahón
+mal
+mala
+malo
+mami
 mandar
 mando
 manipulándome
 mansión
 mariachi
+mas
 matas
 matábamos
 mañana
@@ -248,6 +257,7 @@ muerte
 mujer
 munchie
 mundo
+más
 mía
 música
 nadie
@@ -272,6 +282,7 @@ otra
 otros
 outfit
 oíste
+papi
 par
 pare
 partes
@@ -396,6 +407,7 @@ todos
 tómame
 uno
 va
+vamo
 van
 vas
 ve
@@ -416,6 +428,7 @@ vino
 viste
 vivir
 vivo
+vo'a
 volver
 voy
 vuelo
