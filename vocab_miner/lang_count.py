@@ -1,5 +1,6 @@
 from collections import Counter
 from pathlib import Path
+import json
 import random
 import re
 import shutil
@@ -21,24 +22,6 @@ def add_known_words():
     # try to copy the existing Known Words list to a backup file, if it fails, print a message that the Known Words list is being created, then write the updated Known Words list to file
     copy_words_list("known_words", language)
     save_words_list("known_words", known_words, language)
-
-#def add_stop_words():
-#    language = input('\nWhich Stop Words list would you like to add to?\n>> ').lower().strip()
-#
-#    # try to open the Stop Words list for the language choice, if it fails, create a new Stop Words list for that language
-#    try:
-#        stop_words = load_stop_words(language)
-#    except FileNotFoundError:
-#        stop_words = []
-
-    # prompt user for words to add to the Stop Words list, standardize input, and write the updated list to file
-#    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
-#    add_words = [add_words_str.split()]
-#    stop_words = extend_list(stop_words, add_words)
-
-    # try to copy the existing Stop Words list to a backup file, if it fails, print a message that the Stop Words list is being created, then write the updated Stop Words list to file
-#    copy_words_list("stop_words", language)
-#    save_words_list("stop_words", language)
 
 def analyze_transcript(text, stop_words, known_words, ignore_words):
     words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
@@ -67,7 +50,7 @@ def analyze_transcript(text, stop_words, known_words, ignore_words):
 def choose_media(media_paths):
     print(f'\n')
     for number, file in enumerate(media_paths, start=1):
-        print(f'{number}, {file.name.capitalize()}')
+        print(f'{number}: {file.name.capitalize()}')
     while True:
         user_media_choice = input(f'\nPlease enter the number of the media you would like to select.\n>> ').strip()
         try:
@@ -87,8 +70,9 @@ def choose_media(media_paths):
 
 def choose_transcript(transcript_paths):
     print(f'\n')
-    for number, file in enumerate(transcript_paths, start=1):
-        print(f'{number}, {file.name}')
+    for number, transcript in enumerate(transcript_paths, start=1):
+        metadata = load_metadata(transcript)
+        print(f'{number}, {metadata["artist"]} - {metadata["title"]}')
     while True:
         user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select, or enter "R" for a random transcript.\n>> ').lower().strip()
         if user_transcript_choice == 'r':
@@ -109,7 +93,17 @@ def choose_transcript(transcript_paths):
                 print(f'\nPlease print a valid number.')
                 continue
         chosen_transcript = transcript_paths[choice - 1]
-        confirm_transcript = input(f'\nStudying {chosen_transcript.name}.\nContinue? (Y/N)\n\n>> ').lower().strip()
+        metadata = load_metadata(chosen_transcript)
+        confirm_transcript = input(f"""
+Studying: {metadata["title"]}
+Artist: {metadata["artist"]}
+
+Estimated difficulty: {metadata["difficulty"]}/10 ({metadata["difficulty_tier"]})
+Length: {metadata["total_word_count"]} words
+Vocabulary: {metadata["unique_word_count"]} words
+        
+Continue? (Y/N)
+>> """).lower().strip()
         if confirm_transcript == 'y':
             return chosen_transcript
         else:
@@ -130,6 +124,20 @@ def extend_list(word_list, words):
     word_list.extend(word)
     word_list.sort()
     return word_list
+
+def generate_id(artist_name, transcript_title):
+    artist_id = "".join(word.lower() for word in re.findall(
+        r"\b\w+(?:'\w+)*\b",
+        artist_name,
+        flags=re.UNICODE
+    ))
+    title_id = "".join(word.lower() for word in re.findall(
+        r"\b\w+(?:'\w+)*\b",
+        transcript_title,
+        flags=re.UNICODE
+    ))
+    transcript_id = f"{artist_id}_{title_id}"
+    return transcript_id
 
 def get_media_type(language):
     while True:
@@ -157,6 +165,36 @@ def get_transcript_request():
             chosen_transcript = choose_transcript(transcript_paths)
             return chosen_transcript, language
 
+def import_transcript():
+    language_import = input(f'\nWhat is the language of the transcript you would like to add?\n>> ').lower().strip()
+
+    media_options = {
+        "1": "music",
+        "2": "reading",
+        "3": "video"
+    }
+
+    while True:
+        media_import = input(f"""
+What is type of media?
+======================
+1: Music
+2: Reading
+3: Video
+
+>> """).strip()
+
+        if media_import in media_options:
+            media_import_validated = media_options[media_import]
+            break
+
+        print(f'\nError, please enter 1, 2, or 3.')
+
+    title_import = input(f'\nWhat is the title of the transcript?\n>> ').lower().strip()
+    artist_import = input(f'\nWhat is the name of the artist or creator?\n>> ').lower().strip()
+    id_import = generate_id(artist_import, title_import)
+    text_import = input(f'\nCopy and paste the transcript text.\n>> ').lower().strip()
+
 def list_media_type(language):
     folder = Path("transcripts") / language
     media_paths = list(folder.iterdir())
@@ -164,7 +202,11 @@ def list_media_type(language):
     return media_paths
 
 def list_transcripts(language, chosen_media):
-    transcript_paths = list(chosen_media.glob("*.txt"))
+    transcript_paths = list(chosen_media.iterdir())
+    transcript_paths = [
+        path for path in transcript_paths
+        if path.is_dir()
+    ]
     transcript_paths.sort(key=lambda path: path.name)
     return transcript_paths
 
@@ -186,6 +228,11 @@ def load_known_words(language):
     except FileNotFoundError:
         raise
 
+def load_metadata(transcript):
+    with open(transcript / 'meta.json', 'r', encoding="utf-8") as file:
+        metadata = json.load(file)
+    return metadata
+
 def load_stop_words(language):
     try:
         with open(f'filters/stop_words/stop_words_{language}.txt', 'r', encoding='utf-8') as f:
@@ -195,9 +242,9 @@ def load_stop_words(language):
     except FileNotFoundError:
         raise
 
-def load_transcript(filename):
+def load_transcript(filepath):
     try:
-        with open(filename, 'r', encoding='utf-8') as file:
+        with open(filepath / "transcript.txt", 'r', encoding='utf-8') as file:
             text = file.read().lower()
         return text
     except FileNotFoundError:
@@ -267,7 +314,7 @@ def mine_transcript():
     for n, word, count, example_line in results:
         print(f'{n}: {word} - {count} | {example_line}')
 
-    print(f'\nYou have identified {len(results)} study words out of {len(counts)} total words! ({len(results) / len(counts):.1%})')
+    print(f'\nYou have identified {len(results)} study words out of {len(counts)} total unique words! ({1 - (len(results) / len(counts)):.1%} known)')
 
 def save_words_list(list_name, words_list, language):
     with open(f'filters/{list_name}/{list_name}_{language}.txt', 'w', encoding='utf-8') as f:
@@ -297,18 +344,26 @@ What would you like to do?
     elif choice == 'add':
         add_known_words()
 
+    elif choice == 'import':
+        import_transcript()
+
 # allow for exiting the program
     elif choice == 'exit':
         exit()
 
 # for testing / debugging
 # comment out when not in use
-    elif choice == 'test':
-        language = input(f'\nWhat language would you like to display?\n>> ').lower().strip()
-        transcript_paths = list_transcripts(language)
-        chosen_transcript = choose_transcript(transcript_paths)
-        text = load_transcript(chosen_transcript)
-        print(text)
+    elif choice == 'metadata_wordcount':
+        chosen_transcript, language = get_transcript_request()
+        try:
+            text = load_transcript(chosen_transcript)
+        except FileNotFoundError:
+            print('\nError, file not found, try again.')
+        words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
+        lines = text.split("\n")
+        counts = Counter(words)
+        print(f'\nTotal Words: {sum(counts.values())}')
+        print(f'Unique Words: {len(counts)}')
 
 # handle invalid user input
     else:
