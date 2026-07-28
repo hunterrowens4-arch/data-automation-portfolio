@@ -64,7 +64,29 @@ def analyze_transcript(text, stop_words, known_words, ignore_words):
 
     return results, counts
 
+def choose_media(media_paths):
+    print(f'\n')
+    for number, file in enumerate(media_paths, start=1):
+        print(f'{number}, {file.name.capitalize()}')
+    while True:
+        user_media_choice = input(f'\nPlease enter the number of the media you would like to select.\n>> ').strip()
+        try:
+            choice = int(user_media_choice)
+            if not 1<= choice <= len(media_paths):
+                print(f'\nPlease select a listed type of media.')
+                continue
+        except ValueError:
+            print(f'\nPlease print a valid number.')
+            continue
+        chosen_media = media_paths[choice - 1]
+        confirm_media = input(f'\nStudying {chosen_media.name}.\nContinue? (Y/N)\n\n>> ').lower().strip()
+        if confirm_media == 'y':
+            return chosen_media
+        else:
+            continue
+
 def choose_transcript(transcript_paths):
+    print(f'\n')
     for number, file in enumerate(transcript_paths, start=1):
         print(f'{number}, {file.name}')
     while True:
@@ -109,13 +131,25 @@ def extend_list(word_list, words):
     word_list.sort()
     return word_list
 
+def get_media_type(language):
+    while True:
+        media_paths = list_media_type(language)
+        if len(media_paths) == 0:
+            print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
+            continue
+        else:
+            chosen_media = choose_media(media_paths)
+            return chosen_media    
+
 def get_transcript_request():   
     while True:
         language = input(
-            '\nWhat language is the transcript in? Please enter the full language (for example: "Spanish")\n>> '
+            '\nWhat language would you like to study? Please enter the full language (for example: "Spanish / Russian")\n>> '
         ).lower().strip()
+        media_paths = list_media_type(language)
+        chosen_media = get_media_type(language)
 
-        transcript_paths = list_transcripts(language)
+        transcript_paths = list_transcripts(language, chosen_media)
         if len(transcript_paths) == 0:
             print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
             continue
@@ -123,9 +157,14 @@ def get_transcript_request():
             chosen_transcript = choose_transcript(transcript_paths)
             return chosen_transcript, language
 
-def list_transcripts(language):
+def list_media_type(language):
     folder = Path("transcripts") / language
-    transcript_paths = list(folder.glob("*.txt"))
+    media_paths = list(folder.iterdir())
+    media_paths.sort(key=lambda path: path.name)
+    return media_paths
+
+def list_transcripts(language, chosen_media):
+    transcript_paths = list(chosen_media.glob("*.txt"))
     transcript_paths.sort(key=lambda path: path.name)
     return transcript_paths
 
