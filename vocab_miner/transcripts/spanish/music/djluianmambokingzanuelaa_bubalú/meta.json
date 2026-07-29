@@ -4,8 +4,8 @@
     "title": "Bubalú",
     "language": "spanish",
     "media_type": "music",
-    "difficulty": null,
-    "difficulty_tier": null,
+    "difficulty": 7,
+    "difficulty_tier": "B2-C1",
     "total_word_count": 476,
     "unique_word_count": 219
 }

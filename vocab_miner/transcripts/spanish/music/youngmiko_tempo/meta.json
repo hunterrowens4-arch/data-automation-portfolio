@@ -4,8 +4,8 @@
     "title": "Tempo",
     "language": "spanish",
     "media_type": "music",
-    "difficulty": null,
-    "difficulty_tier": null,
+    "difficulty": 9,
+    "difficulty_tier": "C1-C2",
     "total_word_count": 302,
     "unique_word_count": 123
 }
