@@ -72,13 +72,23 @@ def choose_transcript(transcript_paths):
     print(f'\n')
     for number, transcript in enumerate(transcript_paths, start=1):
         metadata = load_metadata(transcript)
-        print(f'{number}, {metadata["artist"]} - {metadata["title"]}')
+        print(f'{number}: {metadata["artist"]} - {metadata["title"]}')
     while True:
         user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select, or enter "R" for a random transcript.\n>> ').lower().strip()
         if user_transcript_choice == 'r':
             while True:
                 chosen_transcript = random.choice(transcript_paths)
-                confirm_transcript = input(f'\nStudying {chosen_transcript.name}.\nContinue? (Y/N)\n\n>> ').lower().strip()
+                metadata = load_metadata(chosen_transcript)
+                confirm_transcript = input(f"""
+Studying: {metadata["title"]}
+Artist: {metadata["artist"]}
+
+Estimated difficulty: {metadata["difficulty"]}/10 ({metadata["difficulty_tier"]})
+Length: {metadata["total_word_count"]} words
+Vocabulary: {metadata["unique_word_count"]} words
+        
+Continue? (Y/N)
+>> """).lower().strip()
                 if confirm_transcript == 'y':
                     return chosen_transcript
                 else:
@@ -193,7 +203,59 @@ What is type of media?
     title_import = input(f'\nWhat is the title of the transcript?\n>> ').lower().strip()
     artist_import = input(f'\nWhat is the name of the artist or creator?\n>> ').lower().strip()
     id_import = generate_id(artist_import, title_import)
-    text_import = input(f'\nCopy and paste the transcript text.\n>> ').lower().strip()
+    print(f'\nCopy and paste the transcript text below.')
+    print(f'Type "---END---" on a line by itself when finished.\n')
+
+    lines = []
+
+    while True:
+        line = input()
+        if line == "---END---":
+            break
+        lines.append(line)
+
+    text_import = "\n".join(lines)
+    words = re.findall(r"\b\w+(?:'\w+)*\b", text_import, flags=re.UNICODE)
+    counts = Counter(words)
+    total_word_count_import = sum(counts.values())
+    unique_word_count_import = len(counts)
+
+    folder = (
+        Path("transcripts")
+        / language_import
+        / media_import_validated
+        / id_import
+    )
+    folder.mkdir(parents=True, exist_ok=False)
+
+    transcript_file = folder / "transcript.txt"
+
+    transcript_file.write_text(
+        text_import,
+        encoding="utf-8"
+    )
+
+    metadata = {
+    "id": id_import,
+    "artist": artist_import.title(),
+    "title": title_import.title(),
+    "language": language_import,
+    "media_type": media_import_validated,
+    "difficulty": None,
+    "difficulty_tier": None,
+    "total_word_count": total_word_count_import,
+    "unique_word_count": unique_word_count_import
+    }
+    
+    metadata_file = folder / "meta.json"
+
+    with metadata_file.open("w", encoding="utf-8") as file:
+        json.dump(
+            metadata,
+            file,
+            indent=4,
+            ensure_ascii=False
+        )
 
 def list_media_type(language):
     folder = Path("transcripts") / language
@@ -330,9 +392,10 @@ while True:
     choice = input("""
 What would you like to do?
                    
-> Mine = Isolate study worthy vocab from a text file
-> Add  = Add words to your Known Words List(s)
-> Exit = Close the program
+> Mine   = Isolate study worthy vocab from a text file
+> Add    = Add words to your Known Words List(s)
+> Import = Add a new transcript
+> Exit   = Close the program
 
 >> """).lower().strip()
 
@@ -360,7 +423,6 @@ What would you like to do?
         except FileNotFoundError:
             print('\nError, file not found, try again.')
         words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
-        lines = text.split("\n")
         counts = Counter(words)
         print(f'\nTotal Words: {sum(counts.values())}')
         print(f'Unique Words: {len(counts)}')
