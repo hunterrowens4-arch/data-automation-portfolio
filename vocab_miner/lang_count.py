@@ -23,6 +23,19 @@ def add_known_words():
     copy_words_list("known_words", language)
     save_words_list("known_words", known_words, language)
 
+def add_ignored_words():
+    try:
+        ignore_words = load_ignore_words()
+    except FileNotFoundError:
+        ignore_words = []
+
+    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+    add_words = [add_words_str.split()]
+    ignore_words = extend_list(known_words, add_words)
+
+    copy_ignored_list()
+    save_ignored_list(ignore_words)
+
 def analyze_transcript(text, stop_words, known_words, ignore_words):
     words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
     lines = text.split("\n")
@@ -118,6 +131,14 @@ Continue? (Y/N)
             return chosen_transcript
         else:
             continue
+
+def copy_ignored_list():
+    try:
+        shutil.copy(f'filters/ignore_words_global.txt',
+                    f'filters/ignore_words_global_backup.txt')
+        print(f'\nCreating a backup of your ignored words list.')
+    except:
+        print(f'Creating ignore_words_global.txt')
 
 def copy_words_list(words_list, language):
     try:
@@ -378,15 +399,29 @@ def mine_transcript():
 
     print(f'\nYou have identified {len(results)} study words out of {len(counts)} total unique words! ({1 - (len(results) / len(counts)):.1%} known)')
 
+def save_ignored_list(ignore_words):
+    with open(f'filters/ignore_words/ignore_words_global.txt', 'w', encoding='utf-8') as f:
+        for word in ignore_words:
+            f.write(f'{word}\n')
+    print(f'The list is now {len(ignore_words)} words long.')
+
 def save_words_list(list_name, words_list, language):
     with open(f'filters/{list_name}/{list_name}_{language}.txt', 'w', encoding='utf-8') as f:
         for word in words_list:
             f.write(f'{word}\n')
     print(f'The list is now {len(words_list)} words long.')
 
+menu_commands = {
+    'mine': mine_transcript,
+    'add': add_known_words,
+    'ignore': add_ignored_words,
+    'import': import_transcript
+}
+
 print('Welcome to the Vocab Miner!')
 
 # get user action choice
+choice = None
 
 while True:
     choice = input("""
@@ -394,21 +429,15 @@ What would you like to do?
                    
 > Mine   = Isolate study worthy vocab from a text file
 > Add    = Add words to your Known Words List(s)
+> Ignore = Add words to your Ignored Words List
 > Import = Add a new transcript
 > Exit   = Close the program
 
 >> """).lower().strip()
 
 # allow for language-agnostic vocab mining, including option to quit to main menu
-    if choice == 'mine':
-        mine_transcript()
-       
-# allow for adding of words to a known words list, including input standardization and option to quit to main menu
-    elif choice == 'add':
-        add_known_words()
-
-    elif choice == 'import':
-        import_transcript()
+    if choice in menu_commands:
+        menu_commands[choice]()
 
 # allow for exiting the program
     elif choice == 'exit':
