@@ -6,10 +6,12 @@ acá
 adentro
 ahora
 ahí
+album
 alguien
 allá
 amar
 amiga
+amigas
 amor
 ante
 antes
@@ -37,10 +39,12 @@ besarte
 beso
 besándote
 bien
+bless
 blunt
 boca
 boda
 borrar
+bueno
 bunny
 busque
 bésame
@@ -60,10 +64,13 @@ casa
 casi
 casual
 cel
+cerca
 chingar
+claros
 cojo
 colombiana
 come
+comentan
 comerte
 comiéndote
 compro
@@ -111,9 +118,12 @@ dialogando
 dice
 dicen
 diciendo
+difícil
 diga
+digan
 digas
 dijo
+dile
 dime
 dinero
 dios
@@ -130,9 +140,11 @@ empezando
 empezar
 empezaste
 enamora
+enamorando
 enamorar
 enamorarme
 encanta
+encendió
 encima
 encontramo
 encontramos
@@ -140,6 +152,7 @@ enredé
 enseño
 enséñame
 entiendo
+entre
 enviarte
 envíame
 era
@@ -148,6 +161,7 @@ escribe
 escuchar
 escuchas
 estaba
+estamos
 estar
 estoy
 estudiao
@@ -157,8 +171,12 @@ exceso
 explícale
 extraña
 famosa
+felices
 feliz
+fiel
 fiesta
+flow
+forma
 foto
 fotos
 frenchie
@@ -184,6 +202,7 @@ habla
 hablando
 hablar
 hablaron
+hablo
 habían
 hace
 hacer
@@ -200,6 +219,7 @@ iba
 igual
 ilusión
 imaginándote
+importa
 importante
 instagram
 interrupciones
@@ -208,6 +228,7 @@ invitación
 ir
 itachi
 jodió
+juntos
 larga
 largo
 leer
@@ -223,6 +244,7 @@ llego
 llorar
 loco
 luz
+madre
 mahón
 mal
 mala
@@ -238,6 +260,7 @@ matas
 matábamos
 mañana
 mejor
+mejores
 meno
 menos
 mensajes
@@ -247,8 +270,10 @@ mientes
 mierda
 mil
 millón
+mintiendo
 mira
 mismo
+momento
 mucha
 muchacho
 muchas
@@ -257,6 +282,7 @@ muerte
 mujer
 munchie
 mundo
+music
 más
 mía
 música
@@ -282,6 +308,7 @@ otra
 otros
 outfit
 oíste
+padres
 papi
 par
 pare
@@ -290,6 +317,8 @@ pas
 pasa
 pasado
 pasao
+paso
+pasó
 paz
 pelo
 pensando
@@ -322,6 +351,7 @@ primera
 primero
 prioridad
 probarte
+producer
 provoca
 pruebas
 pueden
@@ -371,6 +401,7 @@ seria
 siempre
 siente
 sientes
+siento
 significa
 sin
 sola
@@ -381,13 +412,16 @@ soy
 story
 subir
 subiste
+sucedió
 sucia
 sufrir
 sé
 también
+tatuajes
 tatúo
 temprano
 tener
+tenerte
 tengo
 terminar
 termino
@@ -410,6 +444,7 @@ va
 vamo
 van
 vas
+vaya
 ve
 vea
 veces
@@ -426,6 +461,7 @@ vida
 viene
 vino
 viste
+vivimos
 vivir
 vivo
 vo'a

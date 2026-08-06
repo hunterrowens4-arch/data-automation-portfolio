@@ -236,8 +236,12 @@ What is type of media?
         lines.append(line)
 
     text_import = "\n".join(lines)
-    words = re.findall(r"\b\w+(?:'\w+)*\b", text_import, flags=re.UNICODE)
-    counts = Counter(words)
+    
+    stop_words = []
+    known_words = []
+    ignore_words = []
+
+    resutls, counts = analyze_transcript(text_import, stop_words, known_words, ignore_words)
     total_word_count_import = sum(counts.values())
     unique_word_count_import = len(counts)
 
@@ -446,13 +450,15 @@ What would you like to do?
 # for testing / debugging
 # comment out when not in use
     elif choice == 'metadata_wordcount':
+        stop_words = []
+        known_words = []
+        ignore_words = []
         chosen_transcript, language = get_transcript_request()
         try:
             text = load_transcript(chosen_transcript)
         except FileNotFoundError:
             print('\nError, file not found, try again.')
-        words = re.findall(r"\b\w+(?:'\w+)*\b", text, flags=re.UNICODE)
-        counts = Counter(words)
+        results, counts = analyze_transcript(text, stop_words, known_words, ignore_words)
         print(f'\nTotal Words: {sum(counts.values())}')
         print(f'Unique Words: {len(counts)}')
 
