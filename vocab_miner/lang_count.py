@@ -6,7 +6,7 @@ import re
 import shutil
 
 def add_known_words():
-    language = input('\nWhich Known Words list would you like to add to?\n>> ').lower().strip()
+    language = get_language()
 
     # try to open the Known Words list for the language choice, if it fails, create a new Known Words list for that language
     try:
@@ -31,7 +31,7 @@ def add_ignored_words():
 
     add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
     add_words = [add_words_str.split()]
-    ignore_words = extend_list(known_words, add_words)
+    ignore_words = extend_list(ignore_words, add_words)
 
     copy_ignored_list()
     save_ignored_list(ignore_words)
@@ -61,7 +61,7 @@ def analyze_transcript(text, stop_words, known_words, ignore_words):
     return results, counts
 
 def choose_media(media_paths):
-    print(f'\n')
+    print('')
     for number, file in enumerate(media_paths, start=1):
         print(f'{number}: {file.name.capitalize()}')
     while True:
@@ -134,8 +134,8 @@ Continue? (Y/N)
 
 def copy_ignored_list():
     try:
-        shutil.copy(f'filters/ignore_words_global.txt',
-                    f'filters/ignore_words_global_backup.txt')
+        shutil.copy(f'filters/ignore_words/ignore_words_global.txt',
+                    f'filters/ignore_words/ignore_words_global_backup.txt')
         print(f'\nCreating a backup of your ignored words list.')
     except:
         print(f'Creating ignore_words_global.txt')
@@ -170,6 +170,21 @@ def generate_id(artist_name, transcript_title):
     transcript_id = f"{artist_id}_{title_id}"
     return transcript_id
 
+def get_language():
+    while True:
+        language_choice = input(f"""
+What is the language are you studying today?
+============================================
+1: Spanish
+2: Russian
+>> """).strip()
+        if language_choice in supported_languages:
+            language_validated = supported_languages[language_choice]
+            return language_validated
+        else:
+            print(f'Invalid response. Please enter the number associated with your choice.\n')
+            continue
+    
 def get_media_type(language):
     while True:
         media_paths = list_media_type(language)
@@ -182,9 +197,7 @@ def get_media_type(language):
 
 def get_transcript_request():   
     while True:
-        language = input(
-            '\nWhat language would you like to study? Please enter the full language (for example: "Spanish / Russian")\n>> '
-        ).lower().strip()
+        language = get_language()
         media_paths = list_media_type(language)
         chosen_media = get_media_type(language)
 
@@ -197,7 +210,7 @@ def get_transcript_request():
             return chosen_transcript, language
 
 def import_transcript():
-    language_import = input(f'\nWhat is the language of the transcript you would like to add?\n>> ').lower().strip()
+    language_import = get_language()
 
     media_options = {
         "1": "music",
@@ -207,8 +220,8 @@ def import_transcript():
 
     while True:
         media_import = input(f"""
-What is type of media?
-======================
+What is the type of media?
+==========================
 1: Music
 2: Reading
 3: Video
@@ -274,13 +287,25 @@ What is type of media?
     
     metadata_file = folder / "meta.json"
 
-    with metadata_file.open("w", encoding="utf-8") as file:
-        json.dump(
-            metadata,
-            file,
-            indent=4,
-            ensure_ascii=False
-        )
+    import_confirmation = input(f"""Import {metadata['title']}?
+    
+By          : {metadata['artist']}
+Unique words: {metadata['unique_word_count']}
+Total words : {metadata['total_word_count']}
+
+(Y/N) >> """).lower().strip()
+
+    if import_confirmation == 'n':
+        print('Cancelling import ...')
+    elif import_confirmation =='y':
+        with metadata_file.open("w", encoding="utf-8") as file:
+            json.dump(
+                metadata,
+                file,
+                indent=4,
+                ensure_ascii=False
+            )
+        print(f'Imported {metadata['title']} by {metadata['artist']}.')
 
 def list_media_type(language):
     folder = Path("transcripts") / language
@@ -420,6 +445,11 @@ menu_commands = {
     'add': add_known_words,
     'ignore': add_ignored_words,
     'import': import_transcript
+}
+
+supported_languages = {
+    '1': 'spanish',
+    '2': 'russian' 
 }
 
 print('Welcome to the Vocab Miner!')
