@@ -172,11 +172,13 @@ def generate_id(artist_name, transcript_title):
 
 def get_language():
     while True:
+        print_subheader('SELECT LANGUAGE')
         language_choice = input(f"""
-What is the language are you studying today?
-============================================
-1: Spanish
-2: Russian
+What language are you studying today?
+
+    1: Spanish
+    2: Russian
+
 >> """).strip()
         if language_choice in supported_languages:
             language_validated = supported_languages[language_choice]
@@ -371,14 +373,11 @@ def mine_transcript():
         except FileNotFoundError:
             print('\nError, file not found, try again.')
 
-        # loop to get a valid language choice from the user, including standardization of inputs, and option to quit to main menu
-
     while True:
         continue_choice = -1
         stop_words = []
 
         # try to open the stop words list for the language choice, if it fails, prompt user to continue or return to main menu
-
         try:
             stop_words = load_stop_words(language)
             break
@@ -428,6 +427,22 @@ def mine_transcript():
 
     print(f'\nYou have identified {len(results)} study words out of {len(counts)} total unique words! ({1 - (len(results) / len(counts)):.1%} known)')
 
+def pause():
+    input('\nPress ENTER to continue...')
+
+def print_error(message):
+    print(f'\n[ERROR] {message}')
+
+def print_header(title, width=60):
+    print('\n' + '=' * width)
+    print(title.center(width))
+    print('=' * width)
+
+def print_subheader(title, width=60):
+    print('\n' + '-' * width)
+    print(title.center(width))
+    print('-' * width)
+
 def save_ignored_list(ignore_words):
     with open(f'filters/ignore_words/ignore_words_global.txt', 'w', encoding='utf-8') as f:
         for word in ignore_words:
@@ -441,10 +456,11 @@ def save_words_list(list_name, words_list, language):
     print(f'The list is now {len(words_list)} words long.')
 
 menu_commands = {
-    'mine': mine_transcript,
-    'add': add_known_words,
-    'ignore': add_ignored_words,
-    'import': import_transcript
+    '1': mine_transcript,
+    '2': add_known_words,
+    '3': add_ignored_words,
+    '4': import_transcript,
+    '5': exit
 }
 
 supported_languages = {
@@ -452,30 +468,25 @@ supported_languages = {
     '2': 'russian' 
 }
 
-print('Welcome to the Vocab Miner!')
-
 # get user action choice
 choice = None
 
 while True:
+    print_header('VOCAB MINER')
     choice = input("""
 What would you like to do?
                    
-> Mine   = Isolate study worthy vocab from a text file
-> Add    = Add words to your Known Words List(s)
-> Ignore = Add words to your Ignored Words List
-> Import = Add a new transcript
-> Exit   = Close the program
+    1.  Mine vocabulary
+    2.  Add known words
+    3.  Ignore words
+    4.  Import transcript
+    5.  Exit
 
 >> """).lower().strip()
 
 # allow for language-agnostic vocab mining, including option to quit to main menu
     if choice in menu_commands:
         menu_commands[choice]()
-
-# allow for exiting the program
-    elif choice == 'exit':
-        exit()
 
 # for testing / debugging
 # comment out when not in use
@@ -494,4 +505,5 @@ What would you like to do?
 
 # handle invalid user input
     else:
-        print('Invalid input.')
+        print_error('Invalid input. Please enter the number associated with your choice.')
+        pause()
