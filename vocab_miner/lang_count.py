@@ -60,12 +60,13 @@ def analyze_transcript(text, stop_words, known_words, ignore_words):
 
     return results, counts
 
-def choose_media(media_paths):
+def choose_media(media_paths, language):
+    print_subheader('SELECT MEDIA TYPE')
     print('')
     for number, file in enumerate(media_paths, start=1):
-        print(f'{number}: {file.name.capitalize()}')
+        print(f'    {number}:  {file.name.capitalize()}')
     while True:
-        user_media_choice = input(f'\nPlease enter the number of the media you would like to select.\n>> ').strip()
+        user_media_choice = input(f'\n>> ').strip()
         try:
             choice = int(user_media_choice)
             if not 1<= choice <= len(media_paths):
@@ -75,19 +76,21 @@ def choose_media(media_paths):
             print(f'\nPlease print a valid number.')
             continue
         chosen_media = media_paths[choice - 1]
-        confirm_media = input(f'\nStudying {chosen_media.name}.\nContinue? (Y/N)\n\n>> ').lower().strip()
+        print_subheader('CONFIRM')
+        confirm_media = input(f'\n    Studying {chosen_media.name} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>> ').lower().strip()
         if confirm_media == 'y':
             return chosen_media
         else:
             continue
 
 def choose_transcript(transcript_paths):
+    print_subheader('SELECT TRANSCRIPT')
     print(f'\n')
     for number, transcript in enumerate(transcript_paths, start=1):
         metadata = load_metadata(transcript)
-        print(f'{number}: {metadata["artist"]} - {metadata["title"]}')
+        print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
     while True:
-        user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select, or enter "R" for a random transcript.\n>> ').lower().strip()
+        user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select.\nOr enter "R" for a random transcript.\n>> ').lower().strip()
         if user_transcript_choice == 'r':
             while True:
                 chosen_transcript = random.choice(transcript_paths)
@@ -174,10 +177,8 @@ def get_language():
     while True:
         print_subheader('SELECT LANGUAGE')
         language_choice = input(f"""
-What language are you studying today?
-
-    1: Spanish
-    2: Russian
+    1:  Spanish
+    2:  Russian
 
 >> """).strip()
         if language_choice in supported_languages:
@@ -194,7 +195,7 @@ def get_media_type(language):
             print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
             continue
         else:
-            chosen_media = choose_media(media_paths)
+            chosen_media = choose_media(media_paths, language)
             return chosen_media    
 
 def get_transcript_request():   
@@ -221,12 +222,13 @@ def import_transcript():
     }
 
     while True:
+        print_subheader('IMPORT TRANSCRIPT')
         media_import = input(f"""
-What is the type of media?
-==========================
-1: Music
-2: Reading
-3: Video
+What type of media are you importing?
+
+    1: Music
+    2: Reading
+    3: Video
 
 >> """).strip()
 
@@ -476,11 +478,11 @@ while True:
     choice = input("""
 What would you like to do?
                    
-    1.  Mine vocabulary
-    2.  Add known words
-    3.  Ignore words
-    4.  Import transcript
-    5.  Exit
+    1:  Mine vocabulary
+    2:  Add known words
+    3:  Ignore words
+    4:  Import transcript
+    5:  Exit
 
 >> """).lower().strip()
 
