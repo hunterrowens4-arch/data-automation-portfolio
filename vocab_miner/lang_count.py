@@ -93,7 +93,7 @@ def choose_transcript(transcript_paths):
         for number, transcript in enumerate(transcript_paths, start=1):
             metadata = load_metadata(transcript)
             print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
-        user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select.\nOr enter "R" for a random transcript.\n>> ').lower().strip()
+        user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select.\nOr enter "R" for a random transcript.\n\n>> ').lower().strip()
         if user_transcript_choice == 'r':
             while True:
                 chosen_transcript = random.choice(transcript_paths)
@@ -237,8 +237,8 @@ What type of media are you importing?
 
         print(f'\nError, please enter 1, 2, or 3.')
 
-    title_import = input(f'\nWhat is the title of the transcript?\n>> ').lower().strip()
-    artist_import = input(f'\nWhat is the name of the artist or creator?\n>> ').lower().strip()
+    title_import = input(f'\nWhat is the title of the transcript?\n\n>> ').lower().strip()
+    artist_import = input(f'\nWhat is the name of the artist or creator?\n\n>> ').lower().strip()
     id_import = generate_id(artist_import, title_import)
     print(f'\nCopy and paste the transcript text below.')
     print(f'Type "---END---" on a line by itself when finished.\n')
@@ -290,13 +290,17 @@ What type of media are you importing?
     
     metadata_file = folder / "meta.json"
 
-    import_confirmation = input(f"""Import {metadata['title']}?
+    print_subheader('CONFIRM')
+    import_confirmation = input(f"""
+    Import {metadata['title']}?
     
-By          : {metadata['artist']}
-Unique words: {metadata['unique_word_count']}
-Total words : {metadata['total_word_count']}
+    By          : {metadata['artist']}
+    Unique words: {metadata['unique_word_count']}
+    Total words : {metadata['total_word_count']}
 
-(Y/N) >> """).lower().strip()
+    Continue? (Y/N)
+
+>> """).lower().strip()
 
     if import_confirmation == 'n':
         print('Cancelling import ...')
@@ -396,7 +400,7 @@ def mine_transcript():
 
     while True:
         filter_list = input(
-            '\nWould you like to use a "Known Words" filter? (y/n)\n>> ').lower().strip()
+            '\nWould you like to use a "Known Words" filter? (y/n)\n\n>> ').lower().strip()
         if filter_list == 'y':
 
             # try to open the Known Words list for the language choice, if it fails, prompt user to continue without a Known Words list, try again, or return to main menu
