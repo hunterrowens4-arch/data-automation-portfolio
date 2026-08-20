@@ -458,11 +458,11 @@ def save_words_list(list_name, words_list, language):
     print(f'The list is now {len(words_list)} words long.')
 
 menu_commands = {
-    '1': mine_transcript,
-    '2': add_known_words,
-    '3': add_ignored_words,
-    '4': import_transcript,
-    '5': exit
+    '1': ('Mine vocabulary', mine_transcript),
+    '2': ('Add known words', add_known_words),
+    '3': ('Add ignored words', add_ignored_words),
+    '4': ('Import transcript', import_transcript),
+    '5': ('Exit', exit)
 }
 
 supported_languages = {
@@ -475,20 +475,13 @@ choice = None
 
 while True:
     print_header('VOCAB MINER')
-    choice = input("""
-What would you like to do?
-                   
-    1:  Mine vocabulary
-    2:  Add known words
-    3:  Ignore words
-    4:  Import transcript
-    5:  Exit
+    print(f'\nWhat would you like to do?\n')
+    for key, (label, value) in menu_commands.items():
+        print(f'    {key}:  {label}')
+    choice = input('\n>> ')
 
->> """).lower().strip()
-
-# allow for language-agnostic vocab mining, including option to quit to main menu
     if choice in menu_commands:
-        menu_commands[choice]()
+        menu_commands[choice][1]()
 
 # for testing / debugging
 # comment out when not in use
