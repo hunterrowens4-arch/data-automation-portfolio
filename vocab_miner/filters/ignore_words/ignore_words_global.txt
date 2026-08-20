@@ -15,6 +15,7 @@ balvin
 barcelona
 barcelona
 becky
+bitch
 bizarrap
 boy
 boyka
@@ -40,6 +41,7 @@ eminem
 ey
 fake
 fatty
+flow
 freak
 freaky
 friendly
@@ -60,6 +62,7 @@ he
 hello
 her
 hey
+hood
 huh
 hustler
 hydro
@@ -122,6 +125,7 @@ she
 shorty
 sofía
 sorry
+star
 strawberry
 sunrise
 tainy
@@ -135,6 +139,7 @@ thot
 to
 too
 training
+trap
 u
 uah
 uh
@@ -171,3 +176,4 @@ zivert
 ра
 салле
 угу
+фа

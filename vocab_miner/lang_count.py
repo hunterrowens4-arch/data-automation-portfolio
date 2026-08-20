@@ -15,7 +15,7 @@ def add_known_words():
         known_words = []
 
     # prompt user for words to add to the Known Words list, standardize input, and write the updated list to file
-    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n\n>> ').lower().strip()
     add_words = [add_words_str.split()]
     known_words = extend_list(known_words, add_words)
 
@@ -29,7 +29,7 @@ def add_ignored_words():
     except FileNotFoundError:
         ignore_words = []
 
-    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n>> ').lower().strip()
+    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n\n>> ').lower().strip()
     add_words = [add_words_str.split()]
     ignore_words = extend_list(ignore_words, add_words)
 
