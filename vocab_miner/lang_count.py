@@ -61,11 +61,11 @@ def analyze_transcript(text, stop_words, known_words, ignore_words):
     return results, counts
 
 def choose_media(media_paths, language):
-    print_subheader('SELECT MEDIA TYPE')
-    print('')
-    for number, file in enumerate(media_paths, start=1):
-        print(f'    {number}:  {file.name.capitalize()}')
     while True:
+        print_subheader('SELECT MEDIA TYPE')
+        print('')
+        for number, file in enumerate(media_paths, start=1):
+            print(f'    {number}:  {file.name.capitalize()}')
         user_media_choice = input(f'\n>> ').strip()
         try:
             choice = int(user_media_choice)
@@ -80,55 +80,55 @@ def choose_media(media_paths, language):
         confirm_media = input(f'\n    Studying {chosen_media.name} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>> ').lower().strip()
         if confirm_media == 'y':
             return chosen_media
-        else:
+        elif confirm_media == 'n':
             continue
+        else:
+            print_error('Invalid input. Please enter the number associated with your choice, followed by "Y" or "N" to confirm.')
+            pause()
 
 def choose_transcript(transcript_paths):
-    print_subheader('SELECT TRANSCRIPT')
-    print(f'\n')
-    for number, transcript in enumerate(transcript_paths, start=1):
-        metadata = load_metadata(transcript)
-        print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
     while True:
+        print_subheader('SELECT TRANSCRIPT')
+        print(f'\n')
+        for number, transcript in enumerate(transcript_paths, start=1):
+            metadata = load_metadata(transcript)
+            print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
         user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select.\nOr enter "R" for a random transcript.\n>> ').lower().strip()
         if user_transcript_choice == 'r':
             while True:
                 chosen_transcript = random.choice(transcript_paths)
                 metadata = load_metadata(chosen_transcript)
-                confirm_transcript = input(f"""
-Studying: {metadata["title"]}
-Artist: {metadata["artist"]}
 
-Estimated difficulty: {metadata["difficulty"]}/10 ({metadata["difficulty_tier"]})
-Length: {metadata["total_word_count"]} words
-Vocabulary: {metadata["unique_word_count"]} words
-        
-Continue? (Y/N)
->> """).lower().strip()
                 if confirm_transcript == 'y':
                     return chosen_transcript
+                elif confirm_transcript == 'n':
+                    continue
                 else:
+                    print_error('Invalid input. Please enter the number associated with your choice, followed by "Y" or "N" to confirm.')
+                    pause()
                     continue
         else:
             try:
                 choice = int(user_transcript_choice)
                 if not 1<= choice <= len(transcript_paths):
-                    print(f'\nPlease select a listed transcript.')
+                    print_error('Please select a listed transcript.')
                     continue
+                chosen_transcript = transcript_paths[choice - 1]
             except ValueError:
-                print(f'\nPlease print a valid number.')
+                print_error('Please enter a valid number.')
                 continue
-        chosen_transcript = transcript_paths[choice - 1]
+
         metadata = load_metadata(chosen_transcript)
         confirm_transcript = input(f"""
-Studying: {metadata["title"]}
-Artist: {metadata["artist"]}
+    Studying: {metadata["title"]}
+    Artist: {metadata["artist"]}
 
-Estimated difficulty: {metadata["difficulty"]}/10 ({metadata["difficulty_tier"]})
-Length: {metadata["total_word_count"]} words
-Vocabulary: {metadata["unique_word_count"]} words
+    Estimated difficulty: {metadata["difficulty"]}/10 ({metadata["difficulty_tier"]})
+    Length: {metadata["total_word_count"]} words
+    Vocabulary: {metadata["unique_word_count"]} words
         
-Continue? (Y/N)
+    Continue? (Y/N)
+
 >> """).lower().strip()
         if confirm_transcript == 'y':
             return chosen_transcript
@@ -203,7 +203,6 @@ def get_transcript_request():
         language = get_language()
         media_paths = list_media_type(language)
         chosen_media = get_media_type(language)
-
         transcript_paths = list_transcripts(language, chosen_media)
         if len(transcript_paths) == 0:
             print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
@@ -476,8 +475,8 @@ choice = None
 while True:
     print_header('VOCAB MINER')
     print(f'\nWhat would you like to do?\n')
-    for key, (label, value) in menu_commands.items():
-        print(f'    {key}:  {label}')
+    for number, (label, function) in menu_commands.items():
+        print(f'    {number}:  {label}')
     choice = input('\n>> ')
 
     if choice in menu_commands:
