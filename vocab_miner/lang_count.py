@@ -63,21 +63,25 @@ def analyze_transcript(text, stop_words, known_words, ignore_words):
 def choose_media(media_paths, language):
     while True:
         print_subheader('SELECT MEDIA TYPE')
-        print('')
         for number, file in enumerate(media_paths, start=1):
             print(f'    {number}:  {file.name.capitalize()}')
-        user_media_choice = input(f'\n>> ').strip()
+        print('    0:  Back to language selection')
+        user_media_choice = input(f'\n>>  ').strip()
         try:
             choice = int(user_media_choice)
-            if not 1<= choice <= len(media_paths):
-                print(f'\nPlease select a listed type of media.')
+            if choice == 0:
+                return choice
+            elif not 1 <= choice <= len(media_paths):
+                print_error('Please select a listed type of media')
+                pause()
                 continue
         except ValueError:
-            print(f'\nPlease print a valid number.')
+            print_error('Please print a valid number')
+            pause()
             continue
         chosen_media = media_paths[choice - 1]
         print_subheader('CONFIRM')
-        confirm_media = input(f'\n    Studying {chosen_media.name} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>> ').lower().strip()
+        confirm_media = input(f'    Studying {chosen_media.name} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>>  ').lower().strip()
         if confirm_media == 'y':
             return chosen_media
         elif confirm_media == 'n':
@@ -176,36 +180,43 @@ def generate_id(artist_name, transcript_title):
 def get_language():
     while True:
         print_subheader('SELECT LANGUAGE')
-        language_choice = input(f"""
-    1:  Spanish
-    2:  Russian
-
->> """).strip()
+        for number, language in supported_languages.items():
+            print(f'    {number}:  {language.capitalize()}')
+        print('    0:  Back to main menu')
+        language_choice = input('\n>>  ').strip()
         if language_choice in supported_languages:
             language_validated = supported_languages[language_choice]
             return language_validated
+        elif language_choice == '0':
+            return language_choice
         else:
-            print(f'Invalid response. Please enter the number associated with your choice.\n')
+            print_error('Invalid response. Please enter the number associated with your choice.')
+            pause()
             continue
     
 def get_media_type(language):
     while True:
         media_paths = list_media_type(language)
         if len(media_paths) == 0:
-            print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
+            print_error('Error, folder not found, or no transcripts found in folder. Please try again.')
             continue
         else:
             chosen_media = choose_media(media_paths, language)
+            if chosen_media == 0:
+                return chosen_media
             return chosen_media    
 
 def get_transcript_request():   
     while True:
         language = get_language()
-        media_paths = list_media_type(language)
+        if language == '0':
+            return language, language
         chosen_media = get_media_type(language)
+        if chosen_media == 0:
+            continue
         transcript_paths = list_transcripts(language, chosen_media)
         if len(transcript_paths) == 0:
-            print(f'\nError, folder not found, or no transcripts found in folder. Please try again.')
+            print_error('Error, folder not found, or no transcripts found in folder. Please try again.')
             continue
         else:
             chosen_transcript = choose_transcript(transcript_paths)
@@ -213,30 +224,8 @@ def get_transcript_request():
 
 def import_transcript():
     language_import = get_language()
-
-    media_options = {
-        "1": "music",
-        "2": "reading",
-        "3": "video"
-    }
-
-    while True:
-        print_subheader('IMPORT TRANSCRIPT')
-        media_import = input(f"""
-What type of media are you importing?
-
-    1: Music
-    2: Reading
-    3: Video
-
->> """).strip()
-
-        if media_import in media_options:
-            media_import_validated = media_options[media_import]
-            break
-
-        print(f'\nError, please enter 1, 2, or 3.')
-
+    media_import = get_media_type(language_import)
+    print_subheader('IMPORT TRANSCRIPT')
     title_import = input(f'\nWhat is the title of the transcript?\n\n>> ').lower().strip()
     artist_import = input(f'\nWhat is the name of the artist or creator?\n\n>> ').lower().strip()
     id_import = generate_id(artist_import, title_import)
@@ -290,29 +279,35 @@ What type of media are you importing?
     
     metadata_file = folder / "meta.json"
 
-    print_subheader('CONFIRM')
-    import_confirmation = input(f"""
-    Import {metadata['title']}?
+    while TRUE:
+        print_subheader('CONFIRM')
+        import_confirmation = input(f"""
+        Import {metadata['title']}?
     
-    By          : {metadata['artist']}
-    Unique words: {metadata['unique_word_count']}
-    Total words : {metadata['total_word_count']}
+        By          : {metadata['artist']}
+        Unique words: {metadata['unique_word_count']}
+        Total words : {metadata['total_word_count']}
 
-    Continue? (Y/N)
+        Continue? (Y/N)
 
->> """).lower().strip()
+    >> """).lower().strip()
 
-    if import_confirmation == 'n':
-        print('Cancelling import ...')
-    elif import_confirmation =='y':
-        with metadata_file.open("w", encoding="utf-8") as file:
-            json.dump(
-                metadata,
-                file,
-                indent=4,
-                ensure_ascii=False
-            )
-        print(f'Imported {metadata['title']} by {metadata['artist']}.')
+        if import_confirmation == 'n':
+            print('Cancelling import ...')
+            return
+        elif import_confirmation =='y':
+            with metadata_file.open("w", encoding="utf-8") as file:
+                json.dump(
+                    metadata,
+                    file,
+                    indent=4,
+                    ensure_ascii=False
+                )
+            print(f'Imported {metadata['title']} by {metadata['artist']}.')
+        else:
+            print_error('Please enter "Y" or "N" to confirm the import')
+            pause()
+            continue
 
 def list_media_type(language):
     folder = Path("transcripts") / language
@@ -372,6 +367,8 @@ def load_transcript(filepath):
 def mine_transcript():
     while True:
         chosen_transcript, language = get_transcript_request()
+        if chosen_transcript == '0':
+            return
         try:
             text = load_transcript(chosen_transcript)
             break
@@ -442,11 +439,13 @@ def print_header(title, width=60):
     print('\n' + '=' * width)
     print(title.center(width))
     print('=' * width)
+    print()
 
 def print_subheader(title, width=60):
     print('\n' + '-' * width)
     print(title.center(width))
     print('-' * width)
+    print()
 
 def save_ignored_list(ignore_words):
     with open(f'filters/ignore_words/ignore_words_global.txt', 'w', encoding='utf-8') as f:
@@ -478,10 +477,10 @@ choice = None
 
 while True:
     print_header('VOCAB MINER')
-    print(f'\nWhat would you like to do?\n')
+    print(f'What would you like to do?\n')
     for number, (label, function) in menu_commands.items():
         print(f'    {number}:  {label}')
-    choice = input('\n>> ')
+    choice = input('\n>>  ')
 
     if choice in menu_commands:
         menu_commands[choice][1]()
