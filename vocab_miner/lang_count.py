@@ -97,7 +97,8 @@ def choose_transcript(transcript_paths):
         for number, transcript in enumerate(transcript_paths, start=1):
             metadata = load_metadata(transcript)
             print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
-        user_transcript_choice = input(f'\nPlease enter the number of the transcript you would like to select.\nOr enter "R" for a random transcript.\n\n>> ').lower().strip()
+        print('    0:  Back to language select')
+        user_transcript_choice = input(f'\n    Please enter the number of the transcript you would like to select.\n    Or enter "R" for a random transcript.\n\n>>  ').lower().strip()
         if user_transcript_choice == 'r':
             while True:
                 chosen_transcript = random.choice(transcript_paths)
@@ -108,14 +109,16 @@ def choose_transcript(transcript_paths):
                 elif confirm_transcript == 'n':
                     continue
                 else:
-                    print_error('Invalid input. Please enter the number associated with your choice, followed by "Y" or "N" to confirm.')
+                    print_error('Invalid input. Please enter "Y" or "N" to confirm.')
                     pause()
                     continue
         else:
             try:
                 choice = int(user_transcript_choice)
-                if not 1<= choice <= len(transcript_paths):
-                    print_error('Please select a listed transcript.')
+                if choice == 0:
+                    return
+                elif not 1<= choice <= len(transcript_paths):
+                    print_error('Invalid entry. Please select a listed transcript.')
                     continue
                 chosen_transcript = transcript_paths[choice - 1]
             except ValueError:
@@ -133,11 +136,14 @@ def choose_transcript(transcript_paths):
         
     Continue? (Y/N)
 
->> """).lower().strip()
+>>  """).lower().strip()
         if confirm_transcript == 'y':
             return chosen_transcript
-        else:
+        elif confirm_transcript == 'n':
             continue
+        else:
+            print_error('Invalid entry. Please enter the number of the chosen transcript')
+            pause()
 
 def copy_ignored_list():
     try:
@@ -220,15 +226,12 @@ def get_transcript_request():
             continue
         else:
             chosen_transcript = choose_transcript(transcript_paths)
+            if chosen_transcript == None:
+                continue
             return chosen_transcript, language
 
-def import_transcript():
-    language_import = get_language()
-    media_import = get_media_type(language_import)
-    print_subheader('IMPORT TRANSCRIPT')
-    title_import = input(f'\nWhat is the title of the transcript?\n\n>> ').lower().strip()
-    artist_import = input(f'\nWhat is the name of the artist or creator?\n\n>> ').lower().strip()
-    id_import = generate_id(artist_import, title_import)
+
+def get_transcript_text():
     print(f'\nCopy and paste the transcript text below.')
     print(f'Type "---END---" on a line by itself when finished.\n')
 
@@ -241,6 +244,16 @@ def import_transcript():
         lines.append(line)
 
     text_import = "\n".join(lines)
+    return text_import
+
+def import_transcript():
+    language_import = get_language()
+    media_import = get_media_type(language_import)
+    print_subheader('IMPORT TRANSCRIPT')
+    title_import = input(f'\nWhat is the title of the transcript?\n\n>> ').lower().strip()
+    artist_import = input(f'\nWhat is the name of the artist or creator?\n\n>> ').lower().strip()
+    id_import = generate_id(artist_import, title_import)
+    text_import = get_transcript_text()
     
     stop_words = []
     known_words = []
@@ -459,6 +472,10 @@ def save_words_list(list_name, words_list, language):
             f.write(f'{word}\n')
     print(f'The list is now {len(words_list)} words long.')
 
+debug_menu = {
+    '1': ('Import word count', )
+}
+
 menu_commands = {
     '1': ('Mine vocabulary', mine_transcript),
     '2': ('Add known words', add_known_words),
@@ -486,19 +503,20 @@ while True:
         menu_commands[choice][1]()
 
 # for testing / debugging
-# comment out when not in use
-    elif choice == 'metadata_wordcount':
+    elif choice == '0':
+        text_import = get_transcript_text()
+    
         stop_words = []
         known_words = []
         ignore_words = []
-        chosen_transcript, language = get_transcript_request()
-        try:
-            text = load_transcript(chosen_transcript)
-        except FileNotFoundError:
-            print('\nError, file not found, try again.')
-        results, counts = analyze_transcript(text, stop_words, known_words, ignore_words)
-        print(f'\nTotal Words: {sum(counts.values())}')
-        print(f'Unique Words: {len(counts)}')
+
+        resutls, counts = analyze_transcript(text_import, stop_words, known_words, ignore_words)
+        total_word_count_import = sum(counts.values())
+        unique_word_count_import = len(counts)
+
+        print(f'Total word count: {total_word_count_import}')
+        print(f'Unique word count: {unique_word_count_import}')
+        pause()
 
 # handle invalid user input
     else:
