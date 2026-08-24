@@ -79,9 +79,9 @@ def choose_media(media_paths, language):
             print_error('Please print a valid number')
             pause()
             continue
-        chosen_media = media_paths[choice - 1]
+        chosen_media = media_paths[choice - 1].name
         print_subheader('CONFIRM')
-        confirm_media = input(f'    Studying {chosen_media.name} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>>  ').lower().strip()
+        confirm_media = input(f'    Studying {chosen_media} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>>  ').lower().strip()
         if confirm_media == 'y':
             return chosen_media
         elif confirm_media == 'n':
@@ -250,9 +250,11 @@ def import_transcript():
     language_import = get_language()
     media_import = get_media_type(language_import)
     print_subheader('IMPORT TRANSCRIPT')
-    title_import = input(f'\nWhat is the title of the transcript?\n\n>> ').lower().strip()
-    artist_import = input(f'\nWhat is the name of the artist or creator?\n\n>> ').lower().strip()
+    title_import = input(f'    What is the title of the transcript?\n\n>>  ').lower().strip()
+    print_subheader('IMPORT TRANSCRIPT')
+    artist_import = input(f'    What is the name of the artist or creator?\n\n>>  ').lower().strip()
     id_import = generate_id(artist_import, title_import)
+    print_subheader('IMPORT TRANSCRIPT')
     text_import = get_transcript_text()
     
     stop_words = []
@@ -266,24 +268,18 @@ def import_transcript():
     folder = (
         Path("transcripts")
         / language_import
-        / media_import_validated
+        / media_import
         / id_import
     )
-    folder.mkdir(parents=True, exist_ok=False)
-
-    transcript_file = folder / "transcript.txt"
-
-    transcript_file.write_text(
-        text_import,
-        encoding="utf-8"
-    )
+    print(media_import)
+    print(folder)
 
     metadata = {
     "id": id_import,
     "artist": artist_import.title(),
     "title": title_import.title(),
     "language": language_import,
-    "media_type": media_import_validated,
+    "media_type": media_import,
     "difficulty": None,
     "difficulty_tier": None,
     "total_word_count": total_word_count_import,
@@ -292,14 +288,13 @@ def import_transcript():
     
     metadata_file = folder / "meta.json"
 
-    while TRUE:
+    while True:
         print_subheader('CONFIRM')
-        import_confirmation = input(f"""
-        Import {metadata['title']}?
+        import_confirmation = input(f"""        Import {metadata['title']}?
     
-        By          : {metadata['artist']}
-        Unique words: {metadata['unique_word_count']}
-        Total words : {metadata['total_word_count']}
+        By          :  {metadata['artist']}
+        Unique words:  {metadata['unique_word_count']}
+        Total words :  {metadata['total_word_count']}
 
         Continue? (Y/N)
 
@@ -309,6 +304,14 @@ def import_transcript():
             print('Cancelling import ...')
             return
         elif import_confirmation =='y':
+            folder.mkdir(parents=True, exist_ok=False)
+
+            transcript_file = folder / "transcript.txt"
+
+            transcript_file.write_text(
+                text_import,
+                encoding="utf-8"
+            )
             with metadata_file.open("w", encoding="utf-8") as file:
                 json.dump(
                     metadata,
@@ -316,7 +319,9 @@ def import_transcript():
                     indent=4,
                     ensure_ascii=False
                 )
-            print(f'Imported {metadata['title']} by {metadata['artist']}.')
+            print(f'\nImported {metadata['title']} by {metadata['artist']}.')
+            pause()
+            break
         else:
             print_error('Please enter "Y" or "N" to confirm the import')
             pause()
