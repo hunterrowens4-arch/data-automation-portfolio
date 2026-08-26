@@ -15,7 +15,8 @@ def add_known_words():
         known_words = []
 
     # prompt user for words to add to the Known Words list, standardize input, and write the updated list to file
-    add_words_str = input('\nWhat words would you like to add to the list? Separate the words only with spaces.\n\n>> ').lower().strip()
+    print_subheader('KNOWN WORDS')
+    add_words_str = input('    What words would you like to add to the list? Separate the words only with spaces.\n\n>>  ').lower().strip()
     add_words = [add_words_str.split()]
     known_words = extend_list(known_words, add_words)
 
@@ -79,9 +80,9 @@ def choose_media(media_paths, language):
             print_error('Please print a valid number')
             pause()
             continue
-        chosen_media = media_paths[choice - 1].name
+        chosen_media = media_paths[choice - 1]
         print_subheader('CONFIRM')
-        confirm_media = input(f'    Studying {chosen_media} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>>  ').lower().strip()
+        confirm_media = input(f'    Studying {chosen_media.name} in {language.capitalize()}.\n    Continue? (Y/N)\n\n>>  ').lower().strip()
         if confirm_media == 'y':
             return chosen_media
         elif confirm_media == 'n':
@@ -93,7 +94,6 @@ def choose_media(media_paths, language):
 def choose_transcript(transcript_paths):
     while True:
         print_subheader('SELECT TRANSCRIPT')
-        print(f'\n')
         for number, transcript in enumerate(transcript_paths, start=1):
             metadata = load_metadata(transcript)
             print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
@@ -157,7 +157,7 @@ def copy_words_list(words_list, language):
     try:
         shutil.copy(f'filters/{words_list}/{words_list}_{language}.txt',
                     f'filters/{words_list}/backups/{words_list}_{language}_backup.txt')
-        print(f'\nCreating backup of {words_list}_{language}.txt')
+        print(f'\n  Creating backup of {words_list}_{language}.txt')
     except:
         print(f'Creating {words_list}_{language}.txt')
 
@@ -248,7 +248,7 @@ def get_transcript_text():
 
 def import_transcript():
     language_import = get_language()
-    media_import = get_media_type(language_import)
+    media_import = get_media_type(language_import).name
     print_subheader('IMPORT TRANSCRIPT')
     title_import = input(f'    What is the title of the transcript?\n\n>>  ').lower().strip()
     print_subheader('IMPORT TRANSCRIPT')
@@ -440,12 +440,25 @@ def mine_transcript():
     # process the text to isolate words, count them, and print a filtered list of words with their counts
     results, counts = analyze_transcript(text, stop_words, known_words, ignore_words)
 
-    print('\nVocabulary list (filtered):\n')
+    while True:
+        lines_choice = input(f'\nWould you like to display an example sentence?\n\n>>  ').lower().strip()
 
-    for n, word, count, example_line in results:
-        print(f'{n}: {word} - {count} | {example_line}')
+        print('\nVocabulary list (filtered):\n')
+
+        if lines_choice == 'y':
+            for n, word, count, example_line in results:
+                print(f'{n}: {word} - {count} | {example_line}')
+            break
+        elif lines_choice == 'n':
+            for n, word, count, example_line in results:
+                print(f'{n}: {word} - {count}')
+            break
+        else:
+            print_error('Please enter either "Y" or "N".')
+            pause()
 
     print(f'\nYou have identified {len(results)} study words out of {len(counts)} total unique words! ({1 - (len(results) / len(counts)):.1%} known)')
+    pause()
 
 def pause():
     input('\nPress ENTER to continue...')
@@ -475,7 +488,8 @@ def save_words_list(list_name, words_list, language):
     with open(f'filters/{list_name}/{list_name}_{language}.txt', 'w', encoding='utf-8') as f:
         for word in words_list:
             f.write(f'{word}\n')
-    print(f'The list is now {len(words_list)} words long.')
+    print(f'  The list is now {len(words_list)} words long.')
+    pause()
 
 debug_menu = {
     '1': ('Import word count', )

@@ -3,6 +3,7 @@ abraza
 acabe
 acuerdo
 acá
+además
 adentro
 ahora
 ahí
@@ -12,12 +13,17 @@ allá
 amar
 amiga
 amigas
+amigo
 amor
 ante
 antes
 apaga
 aparte
+aprendí
+aquella
 asesina
+asteroide
+astrónomo
 así
 atrevo
 atrás
@@ -41,6 +47,7 @@ besándote
 bien
 bless
 blunt
+boa
 boca
 boda
 borrar
@@ -63,6 +70,7 @@ carta
 casa
 casi
 casual
+causa
 cel
 cerca
 chingar
@@ -97,6 +105,7 @@ cuenta
 cuerpo
 culo
 culpa
+cuánto
 darle
 darte
 das
@@ -109,9 +118,11 @@ dejas
 demasiado
 demasiado
 demasiao
+demostración
 des
 desde
 después
+detalles
 diabla
 diablo
 dialogando
@@ -134,7 +145,9 @@ dominicana
 dormir
 dos
 día
+edad
 elevarse
+embargo
 emociones
 empezando
 empezar
@@ -152,6 +165,7 @@ enredé
 enseño
 enséñame
 entiendo
+entonces
 entre
 enviarte
 envíame
@@ -163,6 +177,7 @@ escuchas
 estaba
 estamos
 estar
+estos
 estoy
 estudiao
 están
@@ -190,6 +205,7 @@ ganas
 gente
 givenchy
 gradúo
+gran
 grande
 grita
 gucchi
@@ -220,6 +236,7 @@ igual
 ilusión
 imaginándote
 importa
+importancia
 importante
 instagram
 interrupciones
@@ -227,6 +244,7 @@ intocable
 invitación
 ir
 itachi
+jamás
 jodió
 juntos
 larga
@@ -258,6 +276,8 @@ mariachi
 mas
 matas
 matábamos
+mayor
+mayores
 mañana
 mejor
 mejores
@@ -296,6 +316,7 @@ novio
 nuestro
 nuevo
 nunca
+número
 ocasión
 odio
 ojos
@@ -304,9 +325,11 @@ olvidamos
 olvidar
 olvidaron
 olvide
+origen
 otra
 otros
 outfit
+oveja
 oíste
 padres
 papi
@@ -326,14 +349,19 @@ pensar
 perder
 perfecta
 periódico
+personas
 peso
 piel
 pierna
 piernas
 pies
 pijama
+pintar
 pistolón
+planeta
+planetas
 poca
+poco
 podría
 pone
 pongo
@@ -349,10 +377,12 @@ preguntó
 primer
 primera
 primero
+principito
 prioridad
 probarte
 producer
 provoca
+prueba
 pruebas
 pueden
 puedes
@@ -376,6 +406,7 @@ recuerdo
 reina
 relación
 repetirlo
+resulta
 rico
 risa
 roja
@@ -392,6 +423,7 @@ sales
 salga
 seguramente
 seguro
+seis
 semana
 sentido
 sentir
@@ -404,6 +436,7 @@ sientes
 siento
 significa
 sin
+sobre
 sola
 solita
 solo
@@ -419,10 +452,12 @@ sé
 también
 tatuajes
 tatúo
+telescopio
 temprano
 tener
 tenerte
 tengo
+tenido
 terminar
 termino
 textearte
@@ -454,6 +489,7 @@ ver
 verdad
 verso
 ves
+vestido
 vez
 vi
 viajar
