@@ -1,6 +1,7 @@
 from collections import Counter
 from pathlib import Path
 import json
+import math
 import random
 import re
 import shutil
@@ -66,13 +67,13 @@ def choose_media(media_paths, language):
         print_subheader('SELECT MEDIA TYPE')
         for number, file in enumerate(media_paths, start=1):
             print(f'    {number}:  {file.name.capitalize()}')
-        print('    0:  Back to language selection')
+        print('    B:  Back to language selection')
         user_media_choice = input(f'\n>>  ').strip()
+        if user_media_choice == 'b':
+            return user_media_choice
         try:
             choice = int(user_media_choice)
-            if choice == 0:
-                return choice
-            elif not 1 <= choice <= len(media_paths):
+            if not 1 <= choice <= len(media_paths):
                 print_error('Please select a listed type of media')
                 pause()
                 continue
@@ -92,26 +93,56 @@ def choose_media(media_paths, language):
             pause()
 
 def choose_transcript(transcript_paths):
-    while True:
-        print_subheader('SELECT TRANSCRIPT')
-        for number, transcript in enumerate(transcript_paths, start=1):
-            metadata = load_metadata(transcript)
-            print(f'    {number}:  {metadata["artist"]} - {metadata["title"]}')
-        print('    0:  Back to language select')
-        user_transcript_choice = input(f'\n    Please enter the number of the transcript you would like to select.\n    Or enter "R" for a random transcript.\n\n>>  ').lower().strip()
-        if user_transcript_choice == 'r':
-            while True:
-                chosen_transcript = random.choice(transcript_paths)
-                metadata = load_metadata(chosen_transcript)
+    #Set parameters for pagination
+    page = 0
+    page_size = 10
+    pages = math.ceil(len(transcript_paths) / page_size)
 
-                if confirm_transcript == 'y':
-                    return chosen_transcript
-                elif confirm_transcript == 'n':
-                    continue
-                else:
-                    print_error('Invalid input. Please enter "Y" or "N" to confirm.')
-                    pause()
-                    continue
+    #Loop for transcript selection
+    while True:
+
+        #Get current page and parameters
+        page_start = page * page_size
+        page_end = page_start + page_size
+
+        #Print current page
+        print_subheader('SELECT TRANSCRIPT')
+        number_width = len(str(len(transcript_paths)))
+        for number, transcript in enumerate(transcript_paths[page_start:page_end], start=page_start + 1):
+            metadata = load_metadata(transcript)
+            print(f'    {number:>{number_width}}:  {metadata["artist"]} - {metadata["title"]}')
+
+        #Print navigation options
+        print('\n' + '-' * 60)
+        print(f'    {"N":>{number_width}}:  Next page')
+        print(f'    {"P":>{number_width}}:  Previous page')
+        print(f'    {"B":>{number_width}}:  Back')
+        print(f'\n    Page {page + 1} / {pages}')
+
+        user_transcript_choice = input(f'\n    Please enter the number of the transcript you would like to select.\n    Or enter "R" for a random transcript.\n\n>>  ').lower().strip()
+
+        if user_transcript_choice == 'r':
+            chosen_transcript = random.choice(transcript_paths)
+            metadata = load_metadata(chosen_transcript)
+
+        #Allow for page navigation, but only within page range
+        elif user_transcript_choice == 'n':
+            if page < pages - 1:
+                page += 1
+            else:
+                print_error('You are already on the last page')
+                pause()
+            continue
+        elif user_transcript_choice == 'p':
+            if page > 0:
+                page -= 1
+            else:
+                print_error('You are already on the first page')
+                pause()
+            continue
+
+        elif user_transcript_choice == 'b':
+            return
         else:
             try:
                 choice = int(user_transcript_choice)
@@ -188,12 +219,12 @@ def get_language():
         print_subheader('SELECT LANGUAGE')
         for number, language in supported_languages.items():
             print(f'    {number}:  {language.capitalize()}')
-        print('    0:  Back to main menu')
-        language_choice = input('\n>>  ').strip()
+        print('    B:  Back to main menu')
+        language_choice = input('\n>>  ').lower().strip()
         if language_choice in supported_languages:
             language_validated = supported_languages[language_choice]
             return language_validated
-        elif language_choice == '0':
+        elif language_choice == 'b':
             return language_choice
         else:
             print_error('Invalid response. Please enter the number associated with your choice.')
@@ -215,10 +246,10 @@ def get_media_type(language):
 def get_transcript_request():   
     while True:
         language = get_language()
-        if language == '0':
+        if language == 'b':
             return language, language
         chosen_media = get_media_type(language)
-        if chosen_media == 0:
+        if chosen_media == 'b':
             continue
         transcript_paths = list_transcripts(language, chosen_media)
         if len(transcript_paths) == 0:
@@ -385,7 +416,7 @@ def load_transcript(filepath):
 def mine_transcript():
     while True:
         chosen_transcript, language = get_transcript_request()
-        if chosen_transcript == '0':
+        if chosen_transcript == 'b':
             return
         try:
             text = load_transcript(chosen_transcript)
@@ -415,7 +446,7 @@ def mine_transcript():
 
     while True:
         filter_list = input(
-            '\nWould you like to use a "Known Words" filter? (y/n)\n\n>> ').lower().strip()
+            '\nWould you like to use a "Known Words" filter? (Y/N)\n\n>>  ').lower().strip()
         if filter_list == 'y':
 
             # try to open the Known Words list for the language choice, if it fails, prompt user to continue without a Known Words list, try again, or return to main menu
@@ -440,25 +471,57 @@ def mine_transcript():
     # process the text to isolate words, count them, and print a filtered list of words with their counts
     results, counts = analyze_transcript(text, stop_words, known_words, ignore_words)
 
-    while True:
-        lines_choice = input(f'\nWould you like to display an example sentence?\n\n>>  ').lower().strip()
+    lines_choice = input(f'\nWould you like to display an example sentence? (Y/N)\n\n>>  ').lower().strip()
 
-        print('\nVocabulary list (filtered):\n')
+    number_width = len(str(len(results)))
+    page = 0
+    page_size = 10
+    pages = math.ceil(len(results) / page_size)
+
+    while True:
+        page_start = page * page_size
+        page_end = page_start + page_size
+ 
+        print_subheader('Vocabulary list (filtered):')
+        print(f'You have identified {len(results)} study words out of {len(counts)} total unique words! ({1 - (len(results) / len(counts)):.1%} known)')
+        print('\n' + '-' * 60 + '\n')
 
         if lines_choice == 'y':
-            for n, word, count, example_line in results:
-                print(f'{n}: {word} - {count} | {example_line}')
-            break
+            for n, word, count, example_line in results[page_start:page_end]:
+                print(f'    {n:>{number_width}}: {word} - {count} | {example_line}')
         elif lines_choice == 'n':
-            for n, word, count, example_line in results:
-                print(f'{n}: {word} - {count}')
-            break
+            for n, word, count, example_line in results[page_start:page_end]:
+                print(f'    {n:>{number_width}}: {word} - {count}')
         else:
             print_error('Please enter either "Y" or "N".')
             pause()
 
-    print(f'\nYou have identified {len(results)} study words out of {len(counts)} total unique words! ({1 - (len(results) / len(counts)):.1%} known)')
-    pause()
+        #Print navigation options
+        print('\n' + '-' * 60)
+        print(f'    {"N":>{number_width}}:  Next page')
+        print(f'    {"P":>{number_width}}:  Previous page')
+        print(f'    {"B":>{number_width}}:  Back')
+        print(f'\n    Page {page + 1} / {pages}')
+
+        nav_choice = input('\n  >>  ').lower().strip()
+
+        if nav_choice == 'n':
+            if page < pages - 1:
+                page += 1
+            else:
+                print_error('You are already on the last page')
+                pause()
+        elif nav_choice == 'p':
+            if page > 0:
+                page -= 1
+            else:
+                print_error('You are already on the first page')
+                pause()
+        elif nav_choice == 'b':
+            return
+        else:
+            print_error('Invalid choice. Please select a valid choice')
+            pause()
 
 def pause():
     input('\nPress ENTER to continue...')
@@ -514,8 +577,9 @@ choice = None
 while True:
     print_header('VOCAB MINER')
     print(f'What would you like to do?\n')
+    number_width = len(str(len(menu_commands.items())))
     for number, (label, function) in menu_commands.items():
-        print(f'    {number}:  {label}')
+        print(f'    {number:>{number_width}}:  {label}')
     choice = input('\n>>  ')
 
     if choice in menu_commands:
